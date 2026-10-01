@@ -600,42 +600,11 @@ function looksLikeLargeWritingRequest(text) {
 
   const largeDocumentType =
     /\b(write|create|generate|make|draft|compose)\b/.test(s) &&
-    /\b(
-      diary|
-      essay|
-      article|
-      story|
-      chapter|
-      report|
-      document|
-      guide|
-      journal|
-      biography|
-      review|
-      script|
-      novel|
-      notes
-    )\b/.test(s);
+    /\b(diary|essay|article|story|chapter|report|document|guide|journal|biography|review|script|novel|notes)\b/.test(s);
 
   const explicitLongRequest =
-    /\b(
-      detailed|
-      complete|
-      full-length|
-      long|
-      longer|
-      comprehensive|
-      in-depth|
-      extensive
-    )\b/.test(s) &&
-    /\b(
-      write|
-      create|
-      generate|
-      make|
-      draft|
-      compose
-    )\b/.test(s);
+    /\b(detailed|complete|full-length|long|longer|comprehensive|in-depth|extensive)\b/.test(s) &&
+    /\b(write|create|generate|make|draft|compose)\b/.test(s);
 
   return (
     explicitLargeLength ||
@@ -648,47 +617,15 @@ function looksLikeWritingRequest(text) {
   const s = String(text || "").toLowerCase();
 
   return (
-    /\b(
-      write|
-      create|
-      generate|
-      make|
-      draft|
-      compose|
-      continue|
-      expand|
-      extend|
-      develop
-    )\b/.test(s) ||
-    /\b(
-      diary|
-      essay|
-      article|
-      story|
-      chapter|
-      report|
-      journal|
-      biography
-    )\b/.test(s)
+    /\b(write|create|generate|make|draft|compose|continue|expand|extend|develop)\b/.test(s) ||
+    /\b(diary|essay|article|story|chapter|report|journal|biography)\b/.test(s)
   );
 }
 
 function looksLikeSimpleEdit(text) {
   const s = String(text || "").toLowerCase();
 
-  return /\b(
-    fix|
-    correct|
-    edit|
-    rewrite|
-    rephrase|
-    shorten|
-    simplify|
-    improve|
-    polish|
-    clean up|
-    format
-  )\b/.test(s);
+  return /\b(fix|correct|edit|rewrite|rephrase|shorten|simplify|improve|polish|clean up|format)\b/.test(s);
 }
 
 function detectRequestType(prompt, mode) {
