@@ -22,9 +22,12 @@
     --shadow: rgba(0,0,0,.4);
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
     margin: 0;
     min-height: 100%;
     background: var(--bg);
@@ -32,9 +35,16 @@ html, body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-body { padding: 14px; }
+body {
+    padding: 14px;
+}
 
-button, textarea, input, select { font: inherit; }
+button,
+textarea,
+input,
+select {
+    font: inherit;
+}
 
 button {
     color: var(--text);
@@ -80,14 +90,20 @@ button:disabled {
     place-items: center;
     border: 1px solid rgba(114,251,209,.28);
     border-radius: 11px;
-    background: linear-gradient(145deg, rgba(114,251,209,.12), rgba(53,185,151,.035));
+    background: linear-gradient(
+        145deg,
+        rgba(114,251,209,.12),
+        rgba(53,185,151,.035)
+    );
     color: var(--accent);
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 19px;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -2px;
-    box-shadow: inset 0 0 18px rgba(114,251,209,.045), 0 0 18px rgba(114,251,209,.05);
+    box-shadow:
+        inset 0 0 18px rgba(114,251,209,.045),
+        0 0 18px rgba(114,251,209,.05);
     text-shadow: 0 0 10px rgba(114,251,209,.32);
 }
 
@@ -153,7 +169,12 @@ button:disabled {
     cursor: pointer;
     font-size: 13px;
     font-weight: 700;
-    transition: color .22s ease, background .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+    transition:
+        color .22s ease,
+        background .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
 }
 
 .mode-btn:hover {
@@ -163,9 +184,15 @@ button:disabled {
 
 .mode-btn.active {
     color: var(--accent);
-    background: linear-gradient(135deg, rgba(53,185,151,.18), rgba(114,251,209,.05));
+    background: linear-gradient(
+        135deg,
+        rgba(53,185,151,.18),
+        rgba(114,251,209,.05)
+    );
     border-color: rgba(114,251,209,.34);
-    box-shadow: 0 0 20px rgba(114,251,209,.10), inset 0 0 18px rgba(114,251,209,.05);
+    box-shadow:
+        0 0 20px rgba(114,251,209,.10),
+        inset 0 0 18px rgba(114,251,209,.05);
 }
 
 .mode-btn.switching {
@@ -203,9 +230,18 @@ button:disabled {
     transform: translateX(4px);
 }
 
-.toolbar::-webkit-scrollbar { height: 5px; }
-.toolbar::-webkit-scrollbar-track { background: transparent; }
-.toolbar::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 20px; }
+.toolbar::-webkit-scrollbar {
+    height: 5px;
+}
+
+.toolbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.toolbar::-webkit-scrollbar-thumb {
+    background: var(--accent2);
+    border-radius: 20px;
+}
 
 .tool {
     flex: 0 0 auto;
@@ -241,7 +277,10 @@ button:disabled {
     flex: 1;
     min-height: 650px;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 360px;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        360px;
     gap: 10px;
 }
 
@@ -467,73 +506,6 @@ select {
     gap: 8px;
 }
 
-.ai-response-box {
-    margin-top: 7px;
-    border: 1px solid rgba(114,251,209,.20);
-    border-radius: 10px;
-    overflow: hidden;
-    background: rgba(4,10,8,.72);
-    box-shadow: inset 0 0 20px rgba(114,251,209,.025);
-}
-
-.ai-response-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 7px 9px;
-    border-bottom: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-}
-
-.ai-response-copy {
-    padding: 5px 8px;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--panel2);
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 10px;
-}
-
-.ai-response-copy:hover { border-color: var(--accent2); }
-
-.ai-response-text {
-    width: 100%;
-    min-height: 58px;
-    max-height: 270px;
-    resize: vertical;
-    padding: 11px;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--text);
-    font: 12px/1.65 Consolas, "Courier New", monospace;
-}
-
-.ai-response-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 7px 9px;
-    border-top: 1px solid var(--border);
-}
-
-.ai-response-actions button {
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--panel2);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 10px;
-}
-
-.ai-response-actions button:hover { color: var(--accent); border-color: var(--accent2); }
-
 .message {
     padding: 9px;
     border: 1px solid var(--border);
@@ -559,6 +531,106 @@ select {
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: .08em;
+}
+
+.ai-response-box {
+    margin-top: 7px;
+    border: 1px solid rgba(114,251,209,.20);
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(4,10,8,.72);
+    box-shadow: inset 0 0 20px rgba(114,251,209,.025);
+}
+
+.ai-response-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 9px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.ai-response-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.ai-response-status {
+    color: var(--warning);
+    font-size: 9px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+}
+
+.ai-response-status.ok {
+    color: var(--accent);
+}
+
+.ai-response-copy {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--panel2);
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 10px;
+    flex: 0 0 auto;
+}
+
+.ai-response-copy:hover {
+    border-color: var(--accent2);
+}
+
+.ai-response-text {
+    display: block;
+    width: 100%;
+    height: 180px;
+    min-height: 180px;
+    max-height: 60vh;
+    resize: vertical;
+    overflow: auto;
+    padding: 11px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font: 12px/1.65 Consolas, "Courier New", monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.ai-response-text:focus {
+    box-shadow: inset 0 0 0 1px rgba(114,251,209,.08);
+}
+
+.ai-response-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 7px 9px;
+    border-top: 1px solid var(--border);
+}
+
+.ai-response-actions button {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--panel2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.ai-response-actions button:hover {
+    color: var(--accent);
+    border-color: var(--accent2);
 }
 
 .proposal {
@@ -632,9 +704,17 @@ select {
     gap: 13px;
 }
 
-.ok { color: var(--accent); }
-.error { color: var(--danger); }
-.warn { color: var(--warning); }
+.ok {
+    color: var(--accent);
+}
+
+.error {
+    color: var(--danger);
+}
+
+.warn {
+    color: var(--warning);
+}
 
 .toast {
     position: fixed;
@@ -651,6 +731,8 @@ select {
     color: var(--accent);
     font-size: 11px;
     transition: .18s;
+    max-width: calc(100vw - 30px);
+    text-align: center;
 }
 
 .toast.show {
@@ -670,7 +752,9 @@ select {
 }
 
 @media (max-width: 800px) {
-    body { padding: 7px; }
+    body {
+        padding: 7px;
+    }
 
     .topbar {
         align-items: flex-start;
@@ -697,6 +781,12 @@ select {
     .preview {
         min-height: 450px;
     }
+
+    .ai-response-text {
+        height: 220px;
+        min-height: 180px;
+        max-height: 65vh;
+    }
 }
 </style>
 </head>
@@ -707,7 +797,12 @@ select {
 
 <header class="topbar">
     <div class="brand">
-        <div class="brand-mark" aria-label="Markdown" title="Markdown">M↓</div>
+        <div
+            class="brand-mark"
+            aria-label="Markdown"
+            title="Markdown"
+        >M↓</div>
+
         <div>
             <div class="title">Peppermint Markdown Studio</div>
             <div class="subtitle">Write. Understand. Refine.</div>
@@ -723,38 +818,73 @@ select {
 </header>
 
 <section class="format-area">
-    <div class="mode-switch" role="tablist" aria-label="Workspace format">
-        <button class="mode-btn active" data-mode="markdown" role="tab" aria-selected="true">Simple Markdown</button>
-        <button class="mode-btn" data-mode="html" role="tab" aria-selected="false">HTML Markdown</button>
+
+    <div
+        class="mode-switch"
+        role="tablist"
+        aria-label="Workspace format"
+    >
+        <button
+            class="mode-btn active"
+            data-mode="markdown"
+            role="tab"
+            aria-selected="true"
+        >Simple Markdown</button>
+
+        <button
+            class="mode-btn"
+            data-mode="html"
+            role="tab"
+            aria-selected="false"
+        >HTML Markdown</button>
     </div>
+
     <div class="toolbar-wrap">
-        <div class="toolbar" id="formatToolbar" aria-label="Formatting tools"></div>
+        <div
+            class="toolbar"
+            id="formatToolbar"
+            aria-label="Formatting tools"
+        ></div>
     </div>
+
 </section>
 
 <main class="layout">
 
 <section class="pane">
+
     <div class="pane-head">
         <strong id="editorModeTitle">Simple Markdown</strong>
         <span id="selectionInfo">Write</span>
     </div>
-    <textarea id="editor" spellcheck="false"
+
+    <textarea
+        id="editor"
+        spellcheck="false"
         placeholder="# Start writing...
 
 Select text and ask the AI to improve it.
-Or ask the AI to work with the whole document."></textarea>
+Or ask the AI to work with the whole document."
+    ></textarea>
+
 </section>
 
 <section class="pane">
+
     <div class="pane-head">
         <strong>Preview</strong>
         <span>Live</span>
     </div>
-    <article class="preview" id="preview"></article>
+
+    <article
+        class="preview"
+        id="preview"
+    ></article>
+
 </section>
 
 <aside class="pane ai">
+
     <div class="pane-head">
         <strong>AI Assistant</strong>
         <span id="aiStatus">Checking...</span>
@@ -763,78 +893,161 @@ Or ask the AI to work with the whole document."></textarea>
     <div class="ai-body">
 
         <div class="ai-settings">
+
             <div class="field">
                 <label>MODEL</label>
+
                 <select id="model">
-                    <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
-                    <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+                    <option value="openai/gpt-oss-20b">
+                        GPT-OSS 20B
+                    </option>
+
+                    <option value="openai/gpt-oss-120b">
+                        GPT-OSS 120B
+                    </option>
                 </select>
             </div>
 
             <div class="field">
                 <label>REASONING</label>
+
                 <select id="reasoning">
                     <option value="low">Low</option>
                     <option value="medium" selected>Medium</option>
                     <option value="high">High</option>
                 </select>
             </div>
+
         </div>
 
         <div class="quick-actions">
-            <button class="quick" data-ai="Improve the selected text. Preserve its meaning and Markdown formatting.">Improve</button>
-            <button class="quick" data-ai="Fix grammar, spelling, punctuation, and awkward wording. Preserve the author's meaning.">Fix grammar</button>
-            <button class="quick" data-ai="Rewrite the selected text to be clearer and more polished while preserving its meaning.">Rewrite</button>
-            <button class="quick" data-ai="Make the selected text shorter without losing important information.">Shorten</button>
-            <button class="quick" data-ai="Expand the selected text with useful detail while staying consistent with the document.">Expand</button>
-            <button class="quick" data-ai="Continue writing from the current selection or end of the document. Match the existing style.">Continue</button>
-            <button class="quick" data-ai="Summarize the current document in concise Markdown.">Summarize</button>
-            <button class="quick" data-ai="Inspect the current document and repair Markdown syntax without changing its wording unnecessarily.">Fix Markdown</button>
+
+            <button
+                class="quick"
+                data-ai="Improve the selected text. Preserve its meaning and Markdown formatting."
+            >Improve</button>
+
+            <button
+                class="quick"
+                data-ai="Fix grammar, spelling, punctuation, and awkward wording. Preserve the author's meaning."
+            >Fix grammar</button>
+
+            <button
+                class="quick"
+                data-ai="Rewrite the selected text to be clearer and more polished while preserving its meaning."
+            >Rewrite</button>
+
+            <button
+                class="quick"
+                data-ai="Make the selected text shorter without losing important information."
+            >Shorten</button>
+
+            <button
+                class="quick"
+                data-ai="Expand the selected text with useful detail while staying consistent with the document."
+            >Expand</button>
+
+            <button
+                class="quick"
+                data-ai="Continue writing from the current selection or end of the document. Match the existing style."
+            >Continue</button>
+
+            <button
+                class="quick"
+                data-ai="Summarize the current document in concise Markdown."
+            >Summarize</button>
+
+            <button
+                class="quick"
+                data-ai="Inspect the current document and repair Markdown syntax without changing its wording unnecessarily."
+            >Fix Markdown</button>
+
         </div>
 
         <div class="chat" id="chat">
+
             <div class="message ai">
                 <div class="message-label">AI</div>
+
                 Select text for a focused edit, or ask me about the whole document.
             </div>
+
         </div>
 
-        <div class="proposal" id="proposal">
-            <div class="proposal-title">PROPOSED MARKDOWN EDIT</div>
-            <pre id="proposalText"></pre>
-            <div class="proposal-actions">
-                <button class="btn primary" id="acceptBtn">Accept</button>
-                <button class="btn" id="rejectBtn">Reject</button>
-                <button class="btn" id="copyProposalBtn">Copy</button>
+        <div
+            class="proposal"
+            id="proposal"
+        >
+
+            <div class="proposal-title">
+                PROPOSED MARKDOWN EDIT
             </div>
+
+            <pre id="proposalText"></pre>
+
+            <div class="proposal-actions">
+
+                <button
+                    class="btn primary"
+                    id="acceptBtn"
+                >Accept</button>
+
+                <button
+                    class="btn"
+                    id="rejectBtn"
+                >Reject</button>
+
+                <button
+                    class="btn"
+                    id="copyProposalBtn"
+                >Copy</button>
+
+            </div>
+
         </div>
 
         <div class="ai-bottom">
-            <textarea class="ai-input" id="aiInput"
-                placeholder="Ask the AI about your document..."></textarea>
-            <button class="ai-send" id="sendBtn">Ask AI</button>
+
+            <textarea
+                class="ai-input"
+                id="aiInput"
+                placeholder="Ask the AI about your document..."
+            ></textarea>
+
+            <button
+                class="ai-send"
+                id="sendBtn"
+            >Ask AI</button>
+
         </div>
 
     </div>
+
 </aside>
 
 </main>
 
 <footer class="statusbar">
+
     <div class="status-group">
         <span id="words">0 words</span>
         <span id="characters">0 characters</span>
         <span id="lines">0 lines</span>
         <span id="selectionCount">0 selected</span>
     </div>
+
     <div class="status-group">
         <span id="saveStatus">Ready</span>
     </div>
+
 </footer>
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div
+    class="toast"
+    id="toast"
+></div>
 
 <script>
 const editor = document.getElementById("editor");
@@ -846,62 +1059,154 @@ const proposalText = document.getElementById("proposalText");
 const toast = document.getElementById("toast");
 
 const TOOLBAR = document.getElementById("formatToolbar");
-let workspaceMode = localStorage.getItem("peppermint-markdown-mode") || "markdown";
+
+let workspaceMode =
+    localStorage.getItem("peppermint-markdown-mode") ||
+    "markdown";
 
 const SIMPLE_TOOLS = [
-    ["h1","H1"],["h2","H2"],["h3","H3"],["h4","H4"],["h5","H5"],["h6","H6"],
-    ["bold","Bold"],["italic","Italic"],["bolditalic","Bold + Italic"],["strike","Strike"],["code","Inline code"],
-    ["ul","Bulleted list"],["ol","Numbered list"],["task","Task list"],["quote","Blockquote"],["codeblock","Code block"],
-    ["link","Link"],["image","Image"],["table","Table"],["hr","Horizontal rule"],["footnote","Footnote"],
-    ["undo","Undo"],["redo","Redo"]
+    ["h1", "H1"],
+    ["h2", "H2"],
+    ["h3", "H3"],
+    ["h4", "H4"],
+    ["h5", "H5"],
+    ["h6", "H6"],
+    ["bold", "Bold"],
+    ["italic", "Italic"],
+    ["bolditalic", "Bold + Italic"],
+    ["strike", "Strike"],
+    ["code", "Inline code"],
+    ["ul", "Bulleted list"],
+    ["ol", "Numbered list"],
+    ["task", "Task list"],
+    ["quote", "Blockquote"],
+    ["codeblock", "Code block"],
+    ["link", "Link"],
+    ["image", "Image"],
+    ["table", "Table"],
+    ["hr", "Horizontal rule"],
+    ["footnote", "Footnote"],
+    ["undo", "Undo"],
+    ["redo", "Redo"]
 ];
 
 const HTML_TOOLS = [
-    ["underline","Underline"],["mark","Highlight"],["color","Text color"],["bgcolor","Highlight color"],
-    ["sub","Subscript"],["sup","Superscript"],["kbd","Keyboard"],["small","Small text"],["align-left","Align left"],
-    ["align-center","Center"],["align-right","Align right"],["align-justify","Justify"],["size","Text size"],
-    ["styled-block","Styled block"]
+    ["underline", "Underline"],
+    ["mark", "Highlight"],
+    ["color", "Text color"],
+    ["bgcolor", "Highlight color"],
+    ["sub", "Subscript"],
+    ["sup", "Superscript"],
+    ["kbd", "Keyboard"],
+    ["small", "Small text"],
+    ["align-left", "Align left"],
+    ["align-center", "Center"],
+    ["align-right", "Align right"],
+    ["align-justify", "Justify"],
+    ["size", "Text size"],
+    ["styled-block", "Styled block"]
 ];
 
 function renderToolbar() {
-    const tools = workspaceMode === "html" ? [...SIMPLE_TOOLS, ...HTML_TOOLS] : [...SIMPLE_TOOLS];
-    const htmlActions = new Set(HTML_TOOLS.map(([action]) => action));
+    const tools =
+        workspaceMode === "html"
+            ? [...SIMPLE_TOOLS, ...HTML_TOOLS]
+            : [...SIMPLE_TOOLS];
+
+    const htmlActions =
+        new Set(
+            HTML_TOOLS.map(([action]) => action)
+        );
 
     TOOLBAR.innerHTML = tools.map(([action, label]) => {
-        const htmlOnly = htmlActions.has(action);
-        return `<button type="button" class="tool${htmlOnly ? " html-tool" : ""}" data-action="${action}" title="${label}" aria-label="${label}">${label}</button>`;
+        const htmlOnly =
+            htmlActions.has(action);
+
+        return `
+            <button
+                type="button"
+                class="tool${htmlOnly ? " html-tool" : ""}"
+                data-action="${action}"
+                title="${label}"
+                aria-label="${label}"
+            >${label}</button>
+        `;
     }).join("");
 
     TOOLBAR.scrollLeft = 0;
     TOOLBAR.classList.remove("is-changing");
 
     TOOLBAR.querySelectorAll(".tool").forEach(button => {
-        button.addEventListener("click", () => handleTool(button.dataset.action));
+        button.addEventListener(
+            "click",
+            () => handleTool(button.dataset.action)
+        );
     });
 }
 
 function setWorkspaceMode(mode, animate = true) {
-    if (mode !== "markdown" && mode !== "html") return;
-    const changed = workspaceMode !== mode;
+    if (
+        mode !== "markdown" &&
+        mode !== "html"
+    ) {
+        return;
+    }
+
+    const changed =
+        workspaceMode !== mode;
+
     workspaceMode = mode;
-    localStorage.setItem("peppermint-markdown-mode", mode);
+
+    localStorage.setItem(
+        "peppermint-markdown-mode",
+        mode
+    );
 
     document.querySelectorAll(".mode-btn").forEach(btn => {
-        const active = btn.dataset.mode === mode;
-        btn.classList.toggle("active", active);
-        btn.setAttribute("aria-selected", String(active));
+        const active =
+            btn.dataset.mode === mode;
+
+        btn.classList.toggle(
+            "active",
+            active
+        );
+
+        btn.setAttribute(
+            "aria-selected",
+            String(active)
+        );
+
         if (animate && active) {
             btn.classList.add("switching");
-            setTimeout(() => btn.classList.remove("switching"), 220);
+
+            setTimeout(
+                () => btn.classList.remove("switching"),
+                220
+            );
         }
     });
 
-    document.getElementById("editorModeTitle").textContent = mode === "html" ? "HTML Markdown" : "Simple Markdown";
+    document.getElementById(
+        "editorModeTitle"
+    ).textContent =
+        mode === "html"
+            ? "HTML Markdown"
+            : "Simple Markdown";
 
     if (changed && animate) {
-        TOOLBAR.classList.add("is-changing");
-        clearTimeout(setWorkspaceMode.toolbarTimer);
-        setWorkspaceMode.toolbarTimer = setTimeout(renderToolbar, 90);
+        TOOLBAR.classList.add(
+            "is-changing"
+        );
+
+        clearTimeout(
+            setWorkspaceMode.toolbarTimer
+        );
+
+        setWorkspaceMode.toolbarTimer =
+            setTimeout(
+                renderToolbar,
+                90
+            );
     } else {
         renderToolbar();
     }
@@ -909,10 +1214,21 @@ function setWorkspaceMode(mode, animate = true) {
     render();
 }
 
-document.querySelectorAll(".mode-btn").forEach(btn => btn.addEventListener("click", () => setWorkspaceMode(btn.dataset.mode)));
+document.querySelectorAll(".mode-btn")
+    .forEach(btn => {
+        btn.addEventListener(
+            "click",
+            () => setWorkspaceMode(
+                btn.dataset.mode
+            )
+        );
+    });
 
-const STORAGE_KEY = "ai-markdown-studio-v2-document";
-const CHAT_KEY = "ai-markdown-studio-v2-chat";
+const STORAGE_KEY =
+    "ai-markdown-studio-v2-document";
+
+const CHAT_KEY =
+    "ai-markdown-studio-v2-chat";
 
 let history = [];
 let historyIndex = -1;
@@ -922,7 +1238,7 @@ let pendingRange = null;
 let requestBusy = false;
 
 function escapeHTML(text) {
-    return text
+    return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -932,53 +1248,172 @@ function escapeHTML(text) {
 
 function sanitizeInlineHTML(text) {
     const tokens = [];
+
     const token = value => {
-        const id = `\uE000HTML${tokens.length}\uE001`;
+        const id =
+            `\uE000HTML${tokens.length}\uE001`;
+
         tokens.push(value);
+
         return id;
     };
 
-    if (workspaceMode !== "html") return text;
+    if (workspaceMode !== "html") {
+        return text;
+    }
 
-    text = text.replace(/<((?:u|mark|sub|sup|kbd|small|strong|em|del|s|b|i))>([\s\S]*?)<\/\1>/gi, (_, tag, body) => token(`<${tag}>${body}</${tag}>`));
-    text = text.replace(/<span\s+style=["']([^"']*)["']>([\s\S]*?)<\/span>/gi, (_, style, body) => {
-        const safe = style.split(';').map(x => x.trim()).filter(Boolean).filter(rule => /^(color|background-color|text-align|font-size|font-weight|font-style|text-decoration)\s*:\s*(#[0-9a-f]{3,8}|rgba?\([^)]{1,30}\)|[a-z-]+|[0-9.]+(?:px|em|rem|%)?)$/i.test(rule)).join('; ');
-        return safe ? token(`<span style="${escapeHTML(safe)}">${body}</span>`) : body;
-    });
-    text = text.replace(/<div\s+style=["']([^"']*)["']>([\s\S]*?)<\/div>/gi, (_, style, body) => {
-        const safe = style.split(';').map(x => x.trim()).filter(Boolean).filter(rule => /^text-align\s*:\s*(left|center|right|justify)$/i.test(rule)).join('; ');
-        return safe ? token(`<div style="${escapeHTML(safe)}">${body}</div>`) : body;
-    });
+    text = text.replace(
+        /<((?:u|mark|sub|sup|kbd|small|strong|em|del|s|b|i))>([\s\S]*?)<\/\1>/gi,
+        (_, tag, body) =>
+            token(
+                `<${tag}>${body}</${tag}>`
+            )
+    );
 
-    return { text, tokens };
+    text = text.replace(
+        /<span\s+style=["']([^"']*)["']>([\s\S]*?)<\/span>/gi,
+        (_, style, body) => {
+            const safe =
+                style
+                    .split(";")
+                    .map(x => x.trim())
+                    .filter(Boolean)
+                    .filter(rule =>
+                        /^(color|background-color|text-align|font-size|font-weight|font-style|text-decoration)\s*:\s*(#[0-9a-f]{3,8}|rgba?\([^)]{1,30}\)|[a-z-]+|[0-9.]+(?:px|em|rem|%)?)$/i
+                            .test(rule)
+                    )
+                    .join("; ");
+
+            return safe
+                ? token(
+                    `<span style="${escapeHTML(safe)}">${body}</span>`
+                )
+                : body;
+        }
+    );
+
+    text = text.replace(
+        /<div\s+style=["']([^"']*)["']>([\s\S]*?)<\/div>/gi,
+        (_, style, body) => {
+            const safe =
+                style
+                    .split(";")
+                    .map(x => x.trim())
+                    .filter(Boolean)
+                    .filter(rule =>
+                        /^text-align\s*:\s*(left|center|right|justify)$/i
+                            .test(rule)
+                    )
+                    .join("; ");
+
+            return safe
+                ? token(
+                    `<div style="${escapeHTML(safe)}">${body}</div>`
+                )
+                : body;
+        }
+    );
+
+    return {
+        text,
+        tokens
+    };
 }
 
 function inlineMarkdown(text) {
-    const preserved = sanitizeInlineHTML(text);
-    let source = preserved === text ? text : preserved.text;
+    const preserved =
+        sanitizeInlineHTML(text);
+
+    let source =
+        preserved === text
+            ? text
+            : preserved.text;
+
     source = escapeHTML(source);
 
-    source = source.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_, alt, src, title) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(alt)}" ${title ? `title="${escapeHTML(title)}"` : ""}>`);
-    source = source.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_, label, url, title) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" ${title ? `title="${escapeHTML(title)}"` : ""}>${label}</a>`);
-    source = source.replace(/`([^`]+)`/g, "<code>$1</code>");
-    source = source.replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>");
-    source = source.replace(/___([^_]+)___/g, "<strong><em>$1</em></strong>");
-    source = source.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    source = source.replace(/__([^_]+)__/g, "<strong>$1</strong>");
-    source = source.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-    source = source.replace(/_([^_]+)_/g, "<em>$1</em>");
-    source = source.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-    source = source.replace(/\^([^\^]+)\^/g, "<sup>$1</sup>");
+    source = source.replace(
+        /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
+        (_, alt, src, title) =>
+            `<img src="${escapeHTML(src)}" alt="${escapeHTML(alt)}" ${
+                title
+                    ? `title="${escapeHTML(title)}"`
+                    : ""
+            }>`
+    );
+
+    source = source.replace(
+        /\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g,
+        (_, label, url, title) =>
+            `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer" ${
+                title
+                    ? `title="${escapeHTML(title)}"`
+                    : ""
+            }>${label}</a>`
+    );
+
+    source = source.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+    source = source.replace(
+        /\*\*\*([^*]+)\*\*\*/g,
+        "<strong><em>$1</em></strong>"
+    );
+
+    source = source.replace(
+        /___([^_]+)___/g,
+        "<strong><em>$1</em></strong>"
+    );
+
+    source = source.replace(
+        /\*\*([^*]+)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    source = source.replace(
+        /__([^_]+)__/g,
+        "<strong>$1</strong>"
+    );
+
+    source = source.replace(
+        /\*([^*]+)\*/g,
+        "<em>$1</em>"
+    );
+
+    source = source.replace(
+        /_([^_]+)_/g,
+        "<em>$1</em>"
+    );
+
+    source = source.replace(
+        /~~([^~]+)~~/g,
+        "<del>$1</del>"
+    );
+
+    source = source.replace(
+        /\^([^\^]+)\^/g,
+        "<sup>$1</sup>"
+    );
 
     if (workspaceMode === "html") {
-        source = source.replace(/\uE000HTML(\d+)\uE001/g, (_, index) => preserved.tokens[Number(index)] || "");
+        source = source.replace(
+            /\uE000HTML(\d+)\uE001/g,
+            (_, index) =>
+                preserved.tokens[
+                    Number(index)
+                ] || ""
+        );
     }
 
     return source;
 }
 
 function parseMarkdown(md) {
-    const lines = md.replace(/\r\n/g, "\n").split("\n");
+    const lines =
+        md.replace(/\r\n/g, "\n")
+            .split("\n");
+
     let html = "";
     let code = false;
     let lang = "";
@@ -988,8 +1423,15 @@ function parseMarkdown(md) {
     let table = false;
 
     const closeLists = () => {
-        if (ul) { html += "</ul>"; ul = false; }
-        if (ol) { html += "</ol>"; ol = false; }
+        if (ul) {
+            html += "</ul>";
+            ul = false;
+        }
+
+        if (ol) {
+            html += "</ol>";
+            ol = false;
+        }
     };
 
     const closeTable = () => {
@@ -999,22 +1441,35 @@ function parseMarkdown(md) {
         }
     };
 
-    for (let i = 0; i < lines.length; i++) {
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
         const line = lines[i];
 
-        if (line.trim().startsWith("```")) {
+        if (
+            line.trim().startsWith("```")
+        ) {
             closeLists();
             closeTable();
 
             if (!code) {
                 code = true;
-                lang = line.trim().slice(3).trim();
+                lang =
+                    line.trim()
+                        .slice(3)
+                        .trim();
+
                 buffer = [];
             } else {
-                html += `<pre><code class="language-${escapeHTML(lang)}">${escapeHTML(buffer.join("\n"))}</code></pre>`;
+                html +=
+                    `<pre><code class="language-${escapeHTML(lang)}">${escapeHTML(buffer.join("\n"))}</code></pre>`;
+
                 code = false;
                 lang = "";
             }
+
             continue;
         }
 
@@ -1030,26 +1485,47 @@ function parseMarkdown(md) {
         }
 
         if (/^\|.*\|$/.test(line.trim())) {
-            const cells = line.trim()
-                .replace(/^\||\|$/g, "")
-                .split("|")
-                .map(x => x.trim());
+            const cells =
+                line.trim()
+                    .replace(/^\||\|$/g, "")
+                    .split("|")
+                    .map(x => x.trim());
 
-            const separator = cells.every(x => /^:?-+:?$/.test(x));
+            const separator =
+                cells.every(
+                    x => /^:?-+:?$/.test(x)
+                );
 
-            if (separator) continue;
+            if (separator) {
+                continue;
+            }
 
             if (!table) {
                 closeLists();
-                html += "<table><thead><tr>";
-                cells.forEach(c => html += `<th>${inlineMarkdown(c)}</th>`);
-                html += "</tr></thead><tbody>";
+
+                html +=
+                    "<table><thead><tr>";
+
+                cells.forEach(c => {
+                    html +=
+                        `<th>${inlineMarkdown(c)}</th>`;
+                });
+
+                html +=
+                    "</tr></thead><tbody>";
+
                 table = true;
             } else {
                 html += "<tr>";
-                cells.forEach(c => html += `<td>${inlineMarkdown(c)}</td>`);
+
+                cells.forEach(c => {
+                    html +=
+                        `<td>${inlineMarkdown(c)}</td>`;
+                });
+
                 html += "</tr>";
             }
+
             continue;
         }
 
@@ -1057,62 +1533,170 @@ function parseMarkdown(md) {
 
         let m;
 
-        if ((m = line.match(/^######\s+(.*)$/))) { closeLists(); html += `<h6>${inlineMarkdown(m[1])}</h6>`; continue; }
-        if ((m = line.match(/^#####\s+(.*)$/))) { closeLists(); html += `<h5>${inlineMarkdown(m[1])}</h5>`; continue; }
-        if ((m = line.match(/^####\s+(.*)$/))) { closeLists(); html += `<h4>${inlineMarkdown(m[1])}</h4>`; continue; }
-        if ((m = line.match(/^###\s+(.*)$/))) { closeLists(); html += `<h3>${inlineMarkdown(m[1])}</h3>`; continue; }
-        if ((m = line.match(/^##\s+(.*)$/))) { closeLists(); html += `<h2>${inlineMarkdown(m[1])}</h2>`; continue; }
-        if ((m = line.match(/^#\s+(.*)$/))) { closeLists(); html += `<h1>${inlineMarkdown(m[1])}</h1>`; continue; }
+        if (
+            (m = line.match(
+                /^######\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h6>${inlineMarkdown(m[1])}</h6>`;
+            continue;
+        }
 
-        if (/^(\*\*\*|---|___)\s*$/.test(line.trim())) {
+        if (
+            (m = line.match(
+                /^#####\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h5>${inlineMarkdown(m[1])}</h5>`;
+            continue;
+        }
+
+        if (
+            (m = line.match(
+                /^####\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h4>${inlineMarkdown(m[1])}</h4>`;
+            continue;
+        }
+
+        if (
+            (m = line.match(
+                /^###\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h3>${inlineMarkdown(m[1])}</h3>`;
+            continue;
+        }
+
+        if (
+            (m = line.match(
+                /^##\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h2>${inlineMarkdown(m[1])}</h2>`;
+            continue;
+        }
+
+        if (
+            (m = line.match(
+                /^#\s+(.*)$/
+            ))
+        ) {
+            closeLists();
+            html +=
+                `<h1>${inlineMarkdown(m[1])}</h1>`;
+            continue;
+        }
+
+        if (
+            /^(\*\*\*|---|___)\s*$/
+                .test(line.trim())
+        ) {
             closeLists();
             html += "<hr>";
             continue;
         }
 
-        if ((m = line.match(/^\s*>\s?(.*)$/))) {
+        if (
+            (m = line.match(
+                /^\s*>\s?(.*)$/
+            ))
+        ) {
             closeLists();
-            html += `<blockquote>${inlineMarkdown(m[1])}</blockquote>`;
+
+            html +=
+                `<blockquote>${inlineMarkdown(m[1])}</blockquote>`;
+
             continue;
         }
 
-        if ((m = line.match(/^\s*[-*+]\s+\[([ xX])\]\s+(.*)$/))) {
+        if (
+            (m = line.match(
+                /^\s*[-*+]\s+([ xX])\s+(.*)$/
+            ))
+        ) {
             if (!ul) {
-                if (ol) { html += "</ol>"; ol = false; }
+                if (ol) {
+                    html += "</ol>";
+                    ol = false;
+                }
+
                 html += "<ul>";
                 ul = true;
             }
 
-            html += `<li class="task"><input type="checkbox" ${m[1].toLowerCase() === "x" ? "checked" : ""} disabled>${inlineMarkdown(m[2])}</li>`;
+            html +=
+                `<li class="task"><input type="checkbox" ${
+                    m[1].toLowerCase() === "x"
+                        ? "checked"
+                        : ""
+                } disabled>${inlineMarkdown(m[2])}</li>`;
+
             continue;
         }
 
-        if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) {
+        if (
+            (m = line.match(
+                /^\s*[-*+]\s+(.*)$/
+            ))
+        ) {
             if (!ul) {
-                if (ol) { html += "</ol>"; ol = false; }
+                if (ol) {
+                    html += "</ol>";
+                    ol = false;
+                }
+
                 html += "<ul>";
                 ul = true;
             }
-            html += `<li>${inlineMarkdown(m[1])}</li>`;
+
+            html +=
+                `<li>${inlineMarkdown(m[1])}</li>`;
+
             continue;
         }
 
-        if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) {
+        if (
+            (m = line.match(
+                /^\s*\d+\.\s+(.*)$/
+            ))
+        ) {
             if (!ol) {
-                if (ul) { html += "</ul>"; ul = false; }
+                if (ul) {
+                    html += "</ul>";
+                    ul = false;
+                }
+
                 html += "<ol>";
                 ol = true;
             }
-            html += `<li>${inlineMarkdown(m[1])}</li>`;
+
+            html +=
+                `<li>${inlineMarkdown(m[1])}</li>`;
+
             continue;
         }
 
         closeLists();
-        html += `<p>${inlineMarkdown(line)}</p>`;
+
+        html +=
+            `<p>${inlineMarkdown(line)}</p>`;
     }
 
     if (code) {
-        html += `<pre><code>${escapeHTML(buffer.join("\n"))}</code></pre>`;
+        html +=
+            `<pre><code>${escapeHTML(buffer.join("\n"))}</code></pre>`;
     }
 
     closeLists();
@@ -1122,71 +1706,167 @@ function parseMarkdown(md) {
 }
 
 function render() {
-    preview.innerHTML = parseMarkdown(editor.value);
+    preview.innerHTML =
+        parseMarkdown(editor.value);
 
-    const text = editor.value.trim();
-    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
-    const chars = editor.value.length;
-    const lines = editor.value ? editor.value.split("\n").length : 0;
+    const text =
+        editor.value.trim();
 
-    document.getElementById("words").textContent = `${words} ${words === 1 ? "word" : "words"}`;
-    document.getElementById("characters").textContent = `${chars} ${chars === 1 ? "character" : "characters"}`;
-    document.getElementById("lines").textContent = `${lines} ${lines === 1 ? "line" : "lines"}`;
+    const words =
+        text
+            ? text
+                .split(/\s+/)
+                .filter(Boolean)
+                .length
+            : 0;
+
+    const chars =
+        editor.value.length;
+
+    const lines =
+        editor.value
+            ? editor.value.split("\n").length
+            : 0;
+
+    document.getElementById(
+        "words"
+    ).textContent =
+        `${words} ${words === 1 ? "word" : "words"}`;
+
+    document.getElementById(
+        "characters"
+    ).textContent =
+        `${chars} ${chars === 1 ? "character" : "characters"}`;
+
+    document.getElementById(
+        "lines"
+    ).textContent =
+        `${lines} ${lines === 1 ? "line" : "lines"}`;
 
     updateSelectionInfo();
 
-    localStorage.setItem(STORAGE_KEY, editor.value);
-    document.getElementById("saveStatus").textContent = "Saved locally";
+    localStorage.setItem(
+        STORAGE_KEY,
+        editor.value
+    );
 
-    setTimeout(() => {
-        document.getElementById("saveStatus").textContent = "Ready";
-    }, 900);
+    document.getElementById(
+        "saveStatus"
+    ).textContent = "Saved locally";
+
+    clearTimeout(render.saveTimer);
+
+    render.saveTimer =
+        setTimeout(() => {
+            document.getElementById(
+                "saveStatus"
+            ).textContent = "Ready";
+        }, 900);
 }
 
 function updateSelectionInfo() {
-    const count = editor.selectionEnd - editor.selectionStart;
-    document.getElementById("selectionCount").textContent =
+    const count =
+        editor.selectionEnd -
+        editor.selectionStart;
+
+    document.getElementById(
+        "selectionCount"
+    ).textContent =
         `${count} selected`;
 
-    document.getElementById("selectionInfo").textContent =
-        count ? `${count} chars selected` : "Write";
+    document.getElementById(
+        "selectionInfo"
+    ).textContent =
+        count
+            ? `${count} chars selected`
+            : "Write";
 }
 
 function showToast(text) {
     toast.textContent = text;
+
     toast.classList.add("show");
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => toast.classList.remove("show"), 1600);
+
+    clearTimeout(
+        showToast.timer
+    );
+
+    showToast.timer =
+        setTimeout(() => {
+            toast.classList.remove(
+                "show"
+            );
+        }, 1600);
 }
 
 function saveHistory() {
-    if (history[historyIndex] === editor.value) return;
+    if (
+        history[historyIndex] ===
+        editor.value
+    ) {
+        return;
+    }
 
-    history = history.slice(0, historyIndex + 1);
-    history.push(editor.value);
+    history =
+        history.slice(
+            0,
+            historyIndex + 1
+        );
 
-    if (history.length > 100) history.shift();
+    history.push(
+        editor.value
+    );
 
-    historyIndex = history.length - 1;
+    if (history.length > 100) {
+        history.shift();
+    }
+
+    historyIndex =
+        history.length - 1;
 }
 
 function restoreHistory(index) {
-    if (index < 0 || index >= history.length) return;
+    if (
+        index < 0 ||
+        index >= history.length
+    ) {
+        return;
+    }
 
     historyIndex = index;
-    editor.value = history[index];
+
+    editor.value =
+        history[index];
+
     render();
+
     editor.focus();
 }
 
-function insertText(before, after = "", placeholder = "") {
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const selected = editor.value.slice(start, end);
-    const content = selected || placeholder;
+function insertText(
+    before,
+    after = "",
+    placeholder = ""
+) {
+    const start =
+        editor.selectionStart;
+
+    const end =
+        editor.selectionEnd;
+
+    const selected =
+        editor.value.slice(
+            start,
+            end
+        );
+
+    const content =
+        selected || placeholder;
 
     editor.setRangeText(
-        before + content + after,
+        before +
+        content +
+        after,
         start,
         end,
         "select"
@@ -1198,12 +1878,29 @@ function insertText(before, after = "", placeholder = "") {
 }
 
 function prefixLines(prefix) {
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const selected = editor.value.slice(start, end);
+    const start =
+        editor.selectionStart;
 
-    const lines = selected ? selected.split("\n") : [""];
-    const replacement = lines.map(line => prefix + line).join("\n");
+    const end =
+        editor.selectionEnd;
+
+    const selected =
+        editor.value.slice(
+            start,
+            end
+        );
+
+    const lines =
+        selected
+            ? selected.split("\n")
+            : [""];
+
+    const replacement =
+        lines
+            .map(line =>
+                prefix + line
+            )
+            .join("\n");
 
     editor.setRangeText(
         replacement,
@@ -1231,172 +1928,654 @@ function insertAtCursor(text) {
 }
 
 function handleTool(action) {
-    if (["underline","mark","color","bgcolor","sub","sup","kbd","small","align-left","align-center","align-right","align-justify","size","styled-block"].includes(action) && workspaceMode !== "html") {
-        showToast("Switch to HTML Markdown to use this feature");
+    const htmlOnlyActions =
+        [
+            "underline",
+            "mark",
+            "color",
+            "bgcolor",
+            "sub",
+            "sup",
+            "kbd",
+            "small",
+            "align-left",
+            "align-center",
+            "align-right",
+            "align-justify",
+            "size",
+            "styled-block"
+        ];
+
+    if (
+        htmlOnlyActions.includes(action) &&
+        workspaceMode !== "html"
+    ) {
+        showToast(
+            "Switch to HTML Markdown to use this feature"
+        );
+
         return;
     }
 
-    if (action === "h1") prefixLines("# ");
-    if (action === "h2") prefixLines("## ");
-    if (action === "h3") prefixLines("### ");
-    if (action === "h4") prefixLines("#### ");
-    if (action === "h5") prefixLines("##### ");
-    if (action === "h6") prefixLines("###### ");
-    if (action === "bold") insertText("**", "**", "bold text");
-    if (action === "italic") insertText("*", "*", "italic text");
-    if (action === "bolditalic") insertText("***", "***", "bold italic text");
-    if (action === "strike") insertText("~~", "~~", "strikethrough");
-    if (action === "code") insertText("`", "`", "code");
-    if (action === "ul") prefixLines("- ");
-    if (action === "task") prefixLines("- [ ] ");
-    if (action === "quote") prefixLines("> ");
+    if (action === "h1")
+        prefixLines("# ");
+
+    if (action === "h2")
+        prefixLines("## ");
+
+    if (action === "h3")
+        prefixLines("### ");
+
+    if (action === "h4")
+        prefixLines("#### ");
+
+    if (action === "h5")
+        prefixLines("##### ");
+
+    if (action === "h6")
+        prefixLines("###### ");
+
+    if (action === "bold")
+        insertText(
+            "**",
+            "**",
+            "bold text"
+        );
+
+    if (action === "italic")
+        insertText(
+            "*",
+            "*",
+            "italic text"
+        );
+
+    if (action === "bolditalic")
+        insertText(
+            "***",
+            "***",
+            "bold italic text"
+        );
+
+    if (action === "strike")
+        insertText(
+            "~~",
+            "~~",
+            "strikethrough"
+        );
+
+    if (action === "code")
+        insertText(
+            "`",
+            "`",
+            "code"
+        );
+
+    if (action === "ul")
+        prefixLines("- ");
+
+    if (action === "task")
+        prefixLines("- [ ] ");
+
+    if (action === "quote")
+        prefixLines("> ");
 
     if (action === "ol") {
-        const start = editor.selectionStart, end = editor.selectionEnd;
-        const selected = editor.value.slice(start, end);
-        const lines = selected ? selected.split("\n") : [""];
-        editor.setRangeText(lines.map((line, i) => `${i + 1}. ${line}`).join("\n"), start, end, "select");
-        saveHistory(); render(); editor.focus();
-    }
+        const start =
+            editor.selectionStart;
 
-    if (action === "codeblock") insertText("```text\n", "\n```", "your code here");
-    if (action === "hr") insertAtCursor("\n\n---\n\n");
-    if (action === "link") insertText("[", "](https://example.com)", "link text");
-    if (action === "image") insertText("![", "](https://example.com/image.jpg)", "image description");
-    if (action === "table") insertAtCursor("| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Value | Value | Value |\n| Value | Value | Value |");
-    if (action === "footnote") insertAtCursor("[^1]\n\n[^1]: Footnote text");
-    if (action === "undo" && historyIndex > 0) restoreHistory(historyIndex - 1);
-    if (action === "redo" && historyIndex < history.length - 1) restoreHistory(historyIndex + 1);
+        const end =
+            editor.selectionEnd;
 
-    if (workspaceMode === "html") {
-        if (action === "underline") insertText("<u>", "</u>", "underlined text");
-        if (action === "mark") insertText("<mark>", "</mark>", "highlighted text");
-        if (action === "color") insertText('<span style="color:#72fbd1">', "</span>", "colored text");
-        if (action === "bgcolor") insertText('<span style="background-color:#72fbd1">', "</span>", "highlighted text");
-        if (action === "sub") insertText("<sub>", "</sub>", "subscript");
-        if (action === "sup") insertText("<sup>", "</sup>", "superscript");
-        if (action === "kbd") insertText("<kbd>", "</kbd>", "Ctrl");
-        if (action === "small") insertText("<small>", "</small>", "small text");
-        if (action === "align-left") insertText('<div style="text-align:left">', "</div>", "left aligned text");
-        if (action === "align-center") insertText('<div style="text-align:center">', "</div>", "centered text");
-        if (action === "align-right") insertText('<div style="text-align:right">', "</div>", "right aligned text");
-        if (action === "align-justify") insertText('<div style="text-align:justify">', "</div>", "justified text");
-        if (action === "size") insertText('<span style="font-size:1.35em">', "</span>", "larger text");
-        if (action === "styled-block") insertText('<div style="text-align:center; font-weight:700">', "</div>", "styled block");
-    }
-}
+        const selected =
+            editor.value.slice(
+                start,
+                end
+            );
 
-
-editor.addEventListener("input", () => {
-    saveHistory();
-    render();
-});
-
-["select", "keyup", "click"].forEach(type => {
-    editor.addEventListener(type, updateSelectionInfo);
-});
-
-editor.addEventListener("keydown", event => {
-    const mod = event.ctrlKey || event.metaKey;
-
-    if (mod && event.key.toLowerCase() === "b") {
-        event.preventDefault();
-        insertText("**", "**", "bold text");
-    }
-
-    if (mod && event.key.toLowerCase() === "i") {
-        event.preventDefault();
-        insertText("*", "*", "italic text");
-    }
-
-    if (mod && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        insertText("[", "](https://example.com)", "link text");
-    }
-
-    if (mod && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        downloadMarkdown();
-    }
-
-    if (mod && event.key.toLowerCase() === "z") {
-        event.preventDefault();
-
-        if (event.shiftKey) {
-            if (historyIndex < history.length - 1)
-                restoreHistory(historyIndex + 1);
-        } else {
-            if (historyIndex > 0)
-                restoreHistory(historyIndex - 1);
-        }
-    }
-
-    if (mod && event.key.toLowerCase() === "y") {
-        event.preventDefault();
-
-        if (historyIndex < history.length - 1)
-            restoreHistory(historyIndex + 1);
-    }
-
-    if (event.key === "Tab") {
-        event.preventDefault();
+        const lines =
+            selected
+                ? selected.split("\n")
+                : [""];
 
         editor.setRangeText(
-            "    ",
-            editor.selectionStart,
-            editor.selectionEnd,
-            "end"
+            lines
+                .map(
+                    (line, i) =>
+                        `${i + 1}. ${line}`
+                )
+                .join("\n"),
+            start,
+            end,
+            "select"
         );
 
         saveHistory();
         render();
+        editor.focus();
     }
+
+    if (action === "codeblock")
+        insertText(
+            "```text\n",
+            "\n```",
+            "your code here"
+        );
+
+    if (action === "hr")
+        insertAtCursor(
+            "\n\n---\n\n"
+        );
+
+    if (action === "link")
+        insertText(
+            "[",
+            "](https://example.com)",
+            "link text"
+        );
+
+    if (action === "image")
+        insertText(
+            "![",
+            "](https://example.com/image.jpg)",
+            "image description"
+        );
+
+    if (action === "table")
+        insertAtCursor(
+            "| Column 1 | Column 2 | Column 3 |\n" +
+            "| --- | --- | --- |\n" +
+            "| Value | Value | Value |\n" +
+            "| Value | Value | Value |"
+        );
+
+    if (action === "footnote")
+        insertAtCursor(
+            "[^1]\n\n[^1]: Footnote text"
+        );
+
+    if (
+        action === "undo" &&
+        historyIndex > 0
+    ) {
+        restoreHistory(
+            historyIndex - 1
+        );
+    }
+
+    if (
+        action === "redo" &&
+        historyIndex <
+        history.length - 1
+    ) {
+        restoreHistory(
+            historyIndex + 1
+        );
+    }
+
+    if (workspaceMode === "html") {
+
+        if (action === "underline")
+            insertText(
+                "<u>",
+                "</u>",
+                "underlined text"
+            );
+
+        if (action === "mark")
+            insertText(
+                "<mark>",
+                "</mark>",
+                "highlighted text"
+            );
+
+        if (action === "color")
+            insertText(
+                '<span style="color:#72fbd1">',
+                "</span>",
+                "colored text"
+            );
+
+        if (action === "bgcolor")
+            insertText(
+                '<span style="background-color:#72fbd1">',
+                "</span>",
+                "highlighted text"
+            );
+
+        if (action === "sub")
+            insertText(
+                "<sub>",
+                "</sub>",
+                "subscript"
+            );
+
+        if (action === "sup")
+            insertText(
+                "<sup>",
+                "</sup>",
+                "superscript"
+            );
+
+        if (action === "kbd")
+            insertText(
+                "<kbd>",
+                "</kbd>",
+                "Ctrl"
+            );
+
+        if (action === "small")
+            insertText(
+                "<small>",
+                "</small>",
+                "small text"
+            );
+
+        if (action === "align-left")
+            insertText(
+                '<div style="text-align:left">',
+                "</div>",
+                "left aligned text"
+            );
+
+        if (action === "align-center")
+            insertText(
+                '<div style="text-align:center">',
+                "</div>",
+                "centered text"
+            );
+
+        if (action === "align-right")
+            insertText(
+                '<div style="text-align:right">',
+                "</div>",
+                "right aligned text"
+            );
+
+        if (action === "align-justify")
+            insertText(
+                '<div style="text-align:justify">',
+                "</div>",
+                "justified text"
+            );
+
+        if (action === "size")
+            insertText(
+                '<span style="font-size:1.35em">',
+                "</span>",
+                "larger text"
+            );
+
+        if (action === "styled-block")
+            insertText(
+                '<div style="text-align:center; font-weight:700">',
+                "</div>",
+                "styled block"
+            );
+    }
+}
+
+editor.addEventListener(
+    "input",
+    () => {
+        saveHistory();
+        render();
+    }
+);
+
+[
+    "select",
+    "keyup",
+    "click"
+].forEach(type => {
+    editor.addEventListener(
+        type,
+        updateSelectionInfo
+    );
 });
 
-function addMessage(role, content, targetRange = null) {
-    const div = document.createElement("div");
-    div.className = `message ${role}`;
+editor.addEventListener(
+    "keydown",
+    event => {
+        const mod =
+            event.ctrlKey ||
+            event.metaKey;
 
-    const label = document.createElement("div");
-    label.className = "message-label";
-    label.textContent = role === "user" ? "YOU" : "AI";
+        if (
+            mod &&
+            event.key.toLowerCase() === "b"
+        ) {
+            event.preventDefault();
+
+            insertText(
+                "**",
+                "**",
+                "bold text"
+            );
+        }
+
+        if (
+            mod &&
+            event.key.toLowerCase() === "i"
+        ) {
+            event.preventDefault();
+
+            insertText(
+                "*",
+                "*",
+                "italic text"
+            );
+        }
+
+        if (
+            mod &&
+            event.key.toLowerCase() === "k"
+        ) {
+            event.preventDefault();
+
+            insertText(
+                "[",
+                "](https://example.com)",
+                "link text"
+            );
+        }
+
+        if (
+            mod &&
+            event.key.toLowerCase() === "s"
+        ) {
+            event.preventDefault();
+            downloadMarkdown();
+        }
+
+        if (
+            mod &&
+            event.key.toLowerCase() === "z"
+        ) {
+            event.preventDefault();
+
+            if (event.shiftKey) {
+                if (
+                    historyIndex <
+                    history.length - 1
+                ) {
+                    restoreHistory(
+                        historyIndex + 1
+                    );
+                }
+            } else {
+                if (historyIndex > 0) {
+                    restoreHistory(
+                        historyIndex - 1
+                    );
+                }
+            }
+        }
+
+        if (
+            mod &&
+            event.key.toLowerCase() === "y"
+        ) {
+            event.preventDefault();
+
+            if (
+                historyIndex <
+                history.length - 1
+            ) {
+                restoreHistory(
+                    historyIndex + 1
+                );
+            }
+        }
+
+        if (event.key === "Tab") {
+            event.preventDefault();
+
+            editor.setRangeText(
+                "    ",
+                editor.selectionStart,
+                editor.selectionEnd,
+                "end"
+            );
+
+            saveHistory();
+            render();
+        }
+    }
+);
+
+function sizeAIResponse(textarea) {
+    if (!textarea) {
+        return;
+    }
+
+    textarea.style.height = "auto";
+
+    const minHeight = 180;
+
+    const maxHeight =
+        Math.max(
+            360,
+            Math.floor(
+                window.innerHeight * 0.60
+            )
+        );
+
+    const desiredHeight =
+        Math.max(
+            minHeight,
+            Math.min(
+                textarea.scrollHeight,
+                maxHeight
+            )
+        );
+
+    textarea.style.height =
+        `${desiredHeight}px`;
+}
+
+function addMessage(
+    role,
+    content,
+    targetRange = null,
+    metadata = {}
+) {
+    const div =
+        document.createElement("div");
+
+    div.className =
+        `message ${role}`;
+
+    const label =
+        document.createElement("div");
+
+    label.className =
+        "message-label";
+
+    label.textContent =
+        role === "user"
+            ? "YOU"
+            : "AI";
+
     div.appendChild(label);
 
     if (role === "ai") {
-        const box = document.createElement("div");
-        box.className = "ai-response-box";
+        const box =
+            document.createElement("div");
 
-        const head = document.createElement("div");
-        head.className = "ai-response-head";
-        head.innerHTML = '<span>AI response</span>';
-        const copy = document.createElement("button");
-        copy.className = "ai-response-copy";
-        copy.textContent = "Copy";
-        copy.addEventListener("click", () => copyText(content, "AI response copied"));
+        box.className =
+            "ai-response-box";
+
+        const head =
+            document.createElement("div");
+
+        head.className =
+            "ai-response-head";
+
+        const meta =
+            document.createElement("div");
+
+        meta.className =
+            "ai-response-meta";
+
+        const title =
+            document.createElement("span");
+
+        title.textContent =
+            "AI response";
+
+        meta.appendChild(title);
+
+        if (metadata.truncated) {
+            const status =
+                document.createElement("span");
+
+            status.className =
+                "ai-response-status";
+
+            status.textContent =
+                "Output limit reached";
+
+            meta.appendChild(status);
+        } else {
+            const status =
+                document.createElement("span");
+
+            status.className =
+                "ai-response-status ok";
+
+            status.textContent =
+                "Complete";
+
+            meta.appendChild(status);
+        }
+
+        const copy =
+            document.createElement("button");
+
+        copy.className =
+            "ai-response-copy";
+
+        copy.textContent =
+            "Copy";
+
+        copy.addEventListener(
+            "click",
+            async () => {
+                await copyText(
+                    content,
+                    "AI response copied"
+                );
+
+                copy.textContent =
+                    "Copied ✓";
+
+                setTimeout(() => {
+                    copy.textContent =
+                        "Copy";
+                }, 1300);
+            }
+        );
+
+        head.appendChild(meta);
         head.appendChild(copy);
 
-        const text = document.createElement("textarea");
-        text.className = "ai-response-text";
+        const text =
+            document.createElement("textarea");
+
+        text.className =
+            "ai-response-text";
+
         text.readOnly = true;
-        text.value = content;
 
-        const actions = document.createElement("div");
-        actions.className = "ai-response-actions";
-        const addAction = (label, fn) => { const b = document.createElement("button"); b.textContent = label; b.addEventListener("click", fn); actions.appendChild(b); };
-        addAction("Copy", () => copyText(content, "AI response copied"));
-        addAction("Insert", () => insertAtCursor(content));
-        if (targetRange || getSelection()) addAction("Replace Selection", () => replaceSelection(content, targetRange || { start: editor.selectionStart, end: editor.selectionEnd }));
+        text.spellcheck = false;
 
-        box.append(head, text, actions);
+        text.value =
+            content;
+
+        box.appendChild(head);
+        box.appendChild(text);
+
+        const actions =
+            document.createElement("div");
+
+        actions.className =
+            "ai-response-actions";
+
+        const addAction =
+            (labelText, fn) => {
+                const button =
+                    document.createElement("button");
+
+                button.textContent =
+                    labelText;
+
+                button.addEventListener(
+                    "click",
+                    fn
+                );
+
+                actions.appendChild(
+                    button
+                );
+            };
+
+        addAction(
+            "Copy",
+            async () => {
+                await copyText(
+                    content,
+                    "AI response copied"
+                );
+            }
+        );
+
+        addAction(
+            "Insert",
+            () => {
+                insertAtCursor(
+                    content
+                );
+            }
+        );
+
+        const replacementRange =
+            targetRange ||
+            null;
+
+        if (replacementRange) {
+            addAction(
+                "Replace Selection",
+                () => {
+                    replaceSelection(
+                        content,
+                        replacementRange
+                    );
+                }
+            );
+        }
+
+        box.appendChild(actions);
+
         div.appendChild(box);
+
+        requestAnimationFrame(() => {
+            sizeAIResponse(text);
+        });
+
     } else {
-        const body = document.createElement("div");
-        body.textContent = content;
+        const body =
+            document.createElement("div");
+
+        body.textContent =
+            content;
+
         div.appendChild(body);
     }
 
     chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+
+    chat.scrollTop =
+        chat.scrollHeight;
 }
 
 function getSelection() {
@@ -1407,52 +2586,86 @@ function getSelection() {
 }
 
 function buildPrompt(actionText) {
-    const selection = getSelection();
-    const modeText = workspaceMode === "html" ? "HTML Markdown" : "Simple Markdown";
+    const selection =
+        getSelection();
+
+    const modeText =
+        workspaceMode === "html"
+            ? "HTML Markdown"
+            : "Simple Markdown";
+
     if (selection) {
         return `${actionText}
 
 EDITOR MODE: ${modeText}
-The user has selected text in the editor. Treat that selection as the primary edit target. Return the replacement content in the active editor format unless the user explicitly asks for an explanation.
+
+The user has selected text in the editor.
+
+Treat that selection as the primary edit target.
+
+Return the replacement content in the active editor format unless the user explicitly asks for an explanation.
 
 Selected text:
 ${selection}`;
     }
+
     return `${actionText}
 
 EDITOR MODE: ${modeText}
-No text is selected. Use the whole document as context. If this is an editing request, return the requested content in the active editor format rather than discussing what you would change.`;
+
+No text is selected.
+
+Use the whole document as context.
+
+If this is an editing request, return the requested content in the active editor format rather than discussing what you would change.`;
 }
 
-function looksLikeMarkdownEdit(text) {
-    return (
-        text.includes("# ") ||
-        text.includes("## ") ||
-        text.includes("```") ||
-        text.includes("**") ||
-        text.includes("| ") ||
-        text.includes("- ") ||
-        text.includes("[")
+function showProposal(
+    content,
+    start,
+    end
+) {
+    pendingProposal =
+        content;
+
+    pendingRange = {
+        start,
+        end
+    };
+
+    proposalText.textContent =
+        content;
+
+    proposal.classList.add(
+        "show"
     );
-}
-
-function showProposal(content, start, end) {
-    pendingProposal = content;
-    pendingRange = { start, end };
-    proposalText.textContent = content;
-    proposal.classList.add("show");
 }
 
 function hideProposal() {
     pendingProposal = null;
     pendingRange = null;
-    proposal.classList.remove("show");
-    proposalText.textContent = "";
+
+    proposal.classList.remove(
+        "show"
+    );
+
+    proposalText.textContent =
+        "";
 }
 
-function replaceSelection(content, range = null) {
-    const start = range ? range.start : editor.selectionStart;
-    const end = range ? range.end : editor.selectionEnd;
+function replaceSelection(
+    content,
+    range = null
+) {
+    const start =
+        range
+            ? range.start
+            : editor.selectionStart;
+
+    const end =
+        range
+            ? range.end
+            : editor.selectionEnd;
 
     editor.setRangeText(
         content,
@@ -1463,36 +2676,90 @@ function replaceSelection(content, range = null) {
 
     saveHistory();
     render();
+
     editor.focus();
 }
 
-document.getElementById("acceptBtn").addEventListener("click", () => {
-    if (pendingProposal === null) return;
+document.getElementById(
+    "acceptBtn"
+).addEventListener(
+    "click",
+    () => {
+        if (
+            pendingProposal === null
+        ) {
+            return;
+        }
 
-    replaceSelection(pendingProposal, pendingRange);
-    hideProposal();
-    showToast("AI edit accepted");
-});
+        replaceSelection(
+            pendingProposal,
+            pendingRange
+        );
 
-document.getElementById("rejectBtn").addEventListener("click", () => {
-    hideProposal();
-    showToast("AI edit rejected");
-});
+        hideProposal();
 
-document.getElementById("copyProposalBtn").addEventListener("click", () => {
-    if (pendingProposal !== null)
-        copyText(pendingProposal, "AI edit copied");
-});
+        showToast(
+            "AI edit accepted"
+        );
+    }
+);
 
-async function copyText(text, message) {
+document.getElementById(
+    "rejectBtn"
+).addEventListener(
+    "click",
+    () => {
+        hideProposal();
+
+        showToast(
+            "AI edit rejected"
+        );
+    }
+);
+
+document.getElementById(
+    "copyProposalBtn"
+).addEventListener(
+    "click",
+    async () => {
+        if (
+            pendingProposal !== null
+        ) {
+            await copyText(
+                pendingProposal,
+                "AI edit copied"
+            );
+        }
+    }
+);
+
+async function copyText(
+    text,
+    message
+) {
     try {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(
+            text
+        );
     } catch {
-        const temp = document.createElement("textarea");
-        temp.value = text;
-        document.body.appendChild(temp);
+        const temp =
+            document.createElement(
+                "textarea"
+            );
+
+        temp.value =
+            text;
+
+        document.body.appendChild(
+            temp
+        );
+
         temp.select();
-        document.execCommand("copy");
+
+        document.execCommand(
+            "copy"
+        );
+
         temp.remove();
     }
 
@@ -1500,204 +2767,459 @@ async function copyText(text, message) {
 }
 
 function downloadMarkdown() {
-    const blob = new Blob(
-        [editor.value],
-        { type: "text/markdown;charset=utf-8" }
-    );
+    const blob =
+        new Blob(
+            [editor.value],
+            {
+                type:
+                    "text/markdown;charset=utf-8"
+            }
+        );
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const a =
+        document.createElement("a");
 
     a.href = url;
-    a.download = "document.md";
+
+    a.download =
+        "document.md";
 
     document.body.appendChild(a);
+
     a.click();
+
     a.remove();
 
     URL.revokeObjectURL(url);
-    showToast("Markdown downloaded");
+
+    showToast(
+        "Markdown downloaded"
+    );
 }
 
-document.getElementById("downloadBtn")
-    .addEventListener("click", downloadMarkdown);
+document.getElementById(
+    "downloadBtn"
+).addEventListener(
+    "click",
+    downloadMarkdown
+);
 
-document.getElementById("copyBtn")
-    .addEventListener("click", () =>
-        copyText(editor.value, "Markdown copied")
-    );
+document.getElementById(
+    "copyBtn"
+).addEventListener(
+    "click",
+    () =>
+        copyText(
+            editor.value,
+            "Markdown copied"
+        )
+);
 
-document.getElementById("copyRenderedBtn")
-    .addEventListener("click", () =>
-        copyText(preview.innerText, "Rendered text copied")
-    );
+document.getElementById(
+    "copyRenderedBtn"
+).addEventListener(
+    "click",
+    () =>
+        copyText(
+            preview.innerText,
+            "Rendered text copied"
+        )
+);
 
-document.getElementById("newBtn").addEventListener("click", () => {
-    if (
-        editor.value.trim() &&
-        !confirm("Start a new Markdown document?")
-    ) return;
+document.getElementById(
+    "newBtn"
+).addEventListener(
+    "click",
+    () => {
+        if (
+            editor.value.trim() &&
+            !confirm(
+                "Start a new Markdown document?"
+            )
+        ) {
+            return;
+        }
 
-    editor.value = "";
-    aiConversation = [];
-    localStorage.removeItem(CHAT_KEY);
-    chat.innerHTML = `
-        <div class="message ai">
-            <div class="message-label">AI</div>
-            New document ready.
-        </div>
-    `;
+        editor.value = "";
 
-    hideProposal();
+        aiConversation = [];
 
-    history = [""];
-    historyIndex = 0;
+        localStorage.removeItem(
+            CHAT_KEY
+        );
 
-    render();
-    editor.focus();
-});
+        chat.innerHTML = `
+            <div class="message ai">
+                <div class="message-label">AI</div>
+                New document ready.
+            </div>
+        `;
 
-async function sendAI(customPrompt = null) {
-    if (requestBusy) return;
+        hideProposal();
+
+        history = [""];
+        historyIndex = 0;
+
+        render();
+
+        editor.focus();
+    }
+);
+
+async function sendAI(
+    customPrompt = null
+) {
+    if (requestBusy) {
+        return;
+    }
 
     const rawPrompt =
         customPrompt ||
         aiInput.value.trim();
 
     if (!rawPrompt) {
-        showToast("Write an AI request first");
+        showToast(
+            "Write an AI request first"
+        );
+
         return;
     }
 
     requestBusy = true;
 
-    document.getElementById("sendBtn").disabled = true;
-    document.getElementById("sendBtn").textContent = "Thinking...";
+    document.getElementById(
+        "sendBtn"
+    ).disabled = true;
 
-    document.getElementById("aiStatus").textContent = "Thinking";
+    document.getElementById(
+        "sendBtn"
+    ).textContent =
+        "Thinking...";
 
-    addMessage("user", rawPrompt);
+    document.getElementById(
+        "aiStatus"
+    ).textContent =
+        "Thinking";
 
-    const selection = getSelection();
-    const selectionRange = selection ? { start: editor.selectionStart, end: editor.selectionEnd } : null;
+    addMessage(
+        "user",
+        rawPrompt
+    );
+
+    const selection =
+        getSelection();
+
+    const selectionRange =
+        selection
+            ? {
+                start:
+                    editor.selectionStart,
+                end:
+                    editor.selectionEnd
+            }
+            : null;
 
     const payload = {
-        action: selection ? "selection-edit" : "document-assistant",
-        prompt: buildPrompt(rawPrompt),
-        document: editor.value,
+        action:
+            selection
+                ? "selection-edit"
+                : "document-assistant",
+
+        prompt:
+            buildPrompt(
+                rawPrompt
+            ),
+
+        document:
+            editor.value,
+
         selection,
-        conversation: aiConversation,
-        model: document.getElementById("model").value,
-        reasoning: document.getElementById("reasoning").value,
+
+        conversation:
+            aiConversation,
+
+        model:
+            document.getElementById(
+                "model"
+            ).value,
+
+        reasoning:
+            document.getElementById(
+                "reasoning"
+            ).value,
+
         workspaceMode
     };
 
     try {
-        const response = await fetch("/api/ai", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+        const response =
+            await fetch(
+                "/api/ai",
+                {
+                    method: "POST",
 
-        const data = await response.json();
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+        const data =
+            await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || "AI request failed");
+            throw new Error(
+                data.error ||
+                "AI request failed"
+            );
         }
 
-        const content = data.content || "";
+        const content =
+            data.content || "";
 
-        addMessage("ai", content, selectionRange);
-
-        aiConversation.push(
-            { role: "user", content: rawPrompt },
-            { role: "assistant", content }
+        addMessage(
+            "ai",
+            content,
+            selectionRange,
+            {
+                truncated:
+                    Boolean(
+                        data.truncated
+                    )
+            }
         );
 
-        aiConversation = aiConversation.slice(-12);
-        localStorage.setItem(CHAT_KEY, JSON.stringify(aiConversation));
+        aiConversation.push(
+            {
+                role: "user",
+                content: rawPrompt
+            },
+            {
+                role: "assistant",
+                content
+            }
+        );
 
-        const editRequest = selection && !/^(summarize|explain|what|why|how|tell me|analyze|describe)/i.test(rawPrompt);
-        if (editRequest && content.trim()) {
-            showProposal(content, editor.selectionStart, editor.selectionEnd);
+        aiConversation =
+            aiConversation.slice(
+                -12
+            );
+
+        localStorage.setItem(
+            CHAT_KEY,
+            JSON.stringify(
+                aiConversation
+            )
+        );
+
+        const editRequest =
+            selection &&
+            !/^(summarize|explain|what|why|how|tell me|analyze|describe)/i
+                .test(rawPrompt);
+
+        if (
+            editRequest &&
+            content.trim()
+        ) {
+            showProposal(
+                content,
+                selectionRange
+                    ? selectionRange.start
+                    : editor.selectionStart,
+                selectionRange
+                    ? selectionRange.end
+                    : editor.selectionEnd
+            );
         }
 
         aiInput.value = "";
-        document.getElementById("aiStatus").textContent = "Ready";
+
+        document.getElementById(
+            "aiStatus"
+        ).textContent =
+            data.truncated
+                ? "Partial"
+                : "Ready";
+
+        if (data.truncated) {
+            showToast(
+                "AI reached its output limit"
+            );
+        }
 
     } catch (error) {
-        addMessage("ai", `Error: ${error.message}`);
-        document.getElementById("aiStatus").textContent = "Error";
-        showToast(error.message);
+        addMessage(
+            "ai",
+            `Error: ${error.message}`
+        );
+
+        document.getElementById(
+            "aiStatus"
+        ).textContent =
+            "Error";
+
+        showToast(
+            error.message
+        );
+
     } finally {
         requestBusy = false;
-        document.getElementById("sendBtn").disabled = false;
-        document.getElementById("sendBtn").textContent = "Ask AI";
+
+        document.getElementById(
+            "sendBtn"
+        ).disabled = false;
+
+        document.getElementById(
+            "sendBtn"
+        ).textContent =
+            "Ask AI";
     }
 }
 
-document.getElementById("sendBtn")
-    .addEventListener("click", () => sendAI());
+document.getElementById(
+    "sendBtn"
+).addEventListener(
+    "click",
+    () => sendAI()
+);
 
-aiInput.addEventListener("keydown", event => {
-    if (
-        event.key === "Enter" &&
-        (event.ctrlKey || event.metaKey)
-    ) {
-        event.preventDefault();
-        sendAI();
+aiInput.addEventListener(
+    "keydown",
+    event => {
+        if (
+            event.key === "Enter" &&
+            (event.ctrlKey ||
+             event.metaKey)
+        ) {
+            event.preventDefault();
+
+            sendAI();
+        }
     }
-});
+);
 
-document.querySelectorAll(".quick").forEach(button => {
-    button.addEventListener("click", () => {
-        sendAI(button.dataset.ai);
-    });
+document.querySelectorAll(
+    ".quick"
+).forEach(button => {
+    button.addEventListener(
+        "click",
+        () => {
+            sendAI(
+                button.dataset.ai
+            );
+        }
+    );
 });
 
 async function checkHealth() {
     try {
-        const response = await fetch("/api/health");
-        const data = await response.json();
+        const response =
+            await fetch(
+                "/api/health"
+            );
 
-        const status = document.getElementById("aiStatus");
+        const data =
+            await response.json();
+
+        const status =
+            document.getElementById(
+                "aiStatus"
+            );
 
         if (data.configured) {
-            status.textContent = "Online";
-            status.className = "ok";
+            status.textContent =
+                "Online";
+
+            status.className =
+                "ok";
         } else {
-            status.textContent = "No API key";
-            status.className = "warn";
+            status.textContent =
+                "No API key";
+
+            status.className =
+                "warn";
         }
+
     } catch {
-        document.getElementById("aiStatus").textContent = "Offline";
-        document.getElementById("aiStatus").className = "error";
+        const status =
+            document.getElementById(
+                "aiStatus"
+            );
+
+        status.textContent =
+            "Offline";
+
+        status.className =
+            "error";
     }
 }
 
-const saved = localStorage.getItem(STORAGE_KEY);
+window.addEventListener(
+    "resize",
+    () => {
+        document
+            .querySelectorAll(
+                ".ai-response-text"
+            )
+            .forEach(
+                sizeAIResponse
+            );
+    }
+);
+
+const saved =
+    localStorage.getItem(
+        STORAGE_KEY
+    );
 
 if (saved !== null) {
-    editor.value = saved;
+    editor.value =
+        saved;
 }
 
 try {
-    const savedChat = JSON.parse(
-        localStorage.getItem(CHAT_KEY) || "[]"
-    );
+    const savedChat =
+        JSON.parse(
+            localStorage.getItem(
+                CHAT_KEY
+            ) || "[]"
+        );
 
-    if (Array.isArray(savedChat)) {
-        aiConversation = savedChat;
+    if (
+        Array.isArray(
+            savedChat
+        )
+    ) {
+        aiConversation =
+            savedChat;
     }
+
 } catch {}
 
-history = [editor.value];
+history = [
+    editor.value
+];
+
 historyIndex = 0;
 
 render();
-setWorkspaceMode(workspaceMode, false);
+
+setWorkspaceMode(
+    workspaceMode,
+    false
+);
+
 checkHealth();
 </script>
 
