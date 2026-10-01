@@ -933,7 +933,7 @@ function escapeHTML(text) {
 function sanitizeInlineHTML(text) {
     const tokens = [];
     const token = value => {
-        const id = `__HTML_TOKEN_${tokens.length}__`;
+        const id = `\uE000HTML${tokens.length}\uE001`;
         tokens.push(value);
         return id;
     };
@@ -971,7 +971,7 @@ function inlineMarkdown(text) {
     source = source.replace(/\^([^\^]+)\^/g, "<sup>$1</sup>");
 
     if (workspaceMode === "html") {
-        source = source.replace(/(__HTML_TOKEN_(\d+)__)/g, (_, full, index) => preserved.tokens[Number(index)] || full);
+        source = source.replace(/\uE000HTML(\d+)\uE001/g, (_, index) => preserved.tokens[Number(index)] || "");
     }
 
     return source;
