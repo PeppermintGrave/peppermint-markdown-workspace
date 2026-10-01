@@ -6,9 +6,7 @@ const path = require("path");
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
-app.use(express.json({ limit: "2mb" }));
-app.use(express.static(path.join(__dirname, "public")));
-
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_MODEL = "openai/gpt-oss-20b";
 
 const ALLOWED_MODELS = new Set([
@@ -24,341 +22,446 @@ const ALLOWED_REASONING = new Set([
 
 const MAX_DOCUMENT_CHARS = 7000;
 const MAX_SELECTION_CHARS = 5000;
-const MAX_CONVERSATION_MESSAGES = 3;
+const MAX_CONVERSATION_MESSAGES = 4;
 const MAX_CONVERSATION_CHARS = 1800;
 
-const NORMAL_COMPLETION_TOKENS = 1400;
-const HTML_COMPLETION_TOKENS = 2200;
+/*
+  Output budgets are intentionally different.
+
+  Tiny requests stay small so they do not waste TPM.
+  Large writing requests get more room.
+*/
+const OUTPUT_TOKENS = {
+  tiny: 900,
+  normal: 1600,
+  html: 2200,
+  large: 3200
+};
 
 const SYSTEM_PROMPT = `
-You are the intelligent document editor assistant inside Peppermint Markdown Studio.
+You are the built-in AI editor assistant for Peppermint Markdown Studio.
 
-You are NOT a generic chatbot. Your primary job is to understand what the user wants to do inside their current Markdown document and produce a useful editor-ready result.
+You are NOT a generic chatbot.
 
-The active editor mode is supplied with every request:
-- Simple Markdown
-- HTML Markdown
+You are an intelligent document editor, writing assistant, Markdown processor, HTML-Markdown formatter, and document-aware workspace assistant.
 
-Treat the active mode as a hard constraint.
+Always respect the editor mode supplied by the application.
 
-GENERAL BEHAVIOR
+EDITOR MODES:
+- markdown = Simple Markdown
+- html = HTML Markdown
 
-1. Understand intent semantically.
-Do not rely only on exact keywords. Users may phrase requests indirectly, casually, or creatively.
+Understand what the user is actually asking.
 
-2. Respect the current document and selected text.
-Selected text is the primary target when one exists.
+The user may be asking you to:
 
-3. Do not unnecessarily rewrite unrelated content.
+- create new writing
+- edit existing writing
+- rewrite text
+- fix grammar
+- shorten text
+- expand text
+- summarize
+- continue a document
+- format Markdown
+- apply HTML formatting
+- answer a question about the document
+- answer a general question
 
-4. Preserve existing meaning and facts.
+Do NOT automatically rewrite, summarize, continue, or modify the document unless the user asks for it.
 
-5. Do not invent facts, browser shortcuts, software features, tools, APIs, commands, or capabilities.
+DOCUMENT RULES:
 
-6. Do not turn a small formatting request into a long educational article.
+- Treat the supplied document as the current working document.
+- If selected text exists and the request refers to "this", operate primarily on the selection.
+- Preserve unrelated content.
+- Preserve meaning and facts unless the user asks for a change.
+- Preserve existing structure whenever possible.
+- Do not silently delete unrelated sections.
+- Do not invent application features.
+- Do not invent browser shortcuts.
+- Do not invent APIs.
+- Do not invent commands.
+- Do not invent facts.
+- Do not present guesses as facts.
+- Be proportional to the user's request.
 
-7. When the user asks for an edit or formatting operation, prioritize returning the actual usable Markdown/HTML rather than explaining what you changed.
+SIMPLE MARKDOWN MODE:
 
-8. When the user asks a genuine knowledge question, answer normally.
+Use standard Markdown.
 
-9. When the user asks to write new content, produce the requested content in the active editor format.
+Do not use HTML for visual styling.
 
-10. Keep responses reasonably concise unless the user explicitly asks for detailed content.
-
-SIMPLE MARKDOWN MODE
-
-Supported normal Markdown includes:
-- H1-H6 headings
-- bold
-- italic
-- bold + italic
-- strikethrough
-- inline code
-- fenced code blocks
-- ordered lists
-- unordered lists
-- task lists
-- blockquotes
-- links
-- images
-- tables
-- horizontal rules
-- normal Markdown structure
-
-Simple Markdown does NOT reliably provide:
-- text colors
-- background colors
-- highlights
-- underline
-- arbitrary font sizes
-- arbitrary font families
-- text alignment
-- superscript
-- subscript
-- custom visual text styling
-- arbitrary styled HTML blocks
-
-If the user's underlying intent is an HTML-only visual formatting operation while Simple Markdown mode is active, respond EXACTLY:
+If the user requests HTML-only visual formatting while in Simple Markdown mode, respond EXACTLY:
 
 Please change to HTML Markdown editor to use this feature.
 
-Do not invent Markdown syntax for HTML-only styling.
+HTML-only examples include:
 
-HTML MARKDOWN MODE
-
-HTML Markdown supports normal Markdown plus controlled HTML formatting supported by the editor.
-
-Supported visual HTML operations may include:
-- text color
-- background/highlight color
+- changing text color
+- highlighting
 - underline
-- text size
-- alignment
-- superscript
-- subscript
-- keyboard-style text
-- small text
+- custom alignment
+- custom text size
+- custom background
 - styled blocks
-- other simple inline HTML styling
+- custom visual text styling
 
-Use simple, readable HTML.
+Do not attempt to approximate HTML-only formatting using unsupported Markdown.
 
-For normal text color, prefer:
+HTML MARKDOWN MODE:
 
-<span style="color:#HEX">text</span>
+Markdown plus concise, controlled HTML is allowed.
 
-For background/highlight:
+Use HTML only when it actually serves the user's request.
 
-<span style="background-color:#HEX">text</span>
+Do not convert ordinary Markdown into unnecessary HTML.
 
-For underline:
+For example:
 
-<u>text</u>
+If the user asks:
 
-For superscript:
+"Make this a heading"
 
-<sup>text</sup>
+use normal Markdown:
 
-For subscript:
+## Heading
 
-<sub>text</sub>
+If the user asks:
 
-Do not generate unnecessary wrappers.
+"Make this heading blue"
 
-IMPORTANT HTML EFFICIENCY RULE
+HTML styling is appropriate:
 
-Do NOT wrap every individual word in a separate <span> unless the user explicitly asks for word-by-word coloring.
+## <span style="color:#35b997">Heading</span>
 
-If a whole sentence or paragraph should have one color, use ONE span around that relevant text.
+If the user asks:
 
-Bad:
-<span style="color:red">This</span> <span style="color:red">is</span> <span style="color:red">a</span> <span style="color:red">sentence</span>
+"Highlight this sentence"
 
-Good:
-<span style="color:red">This is a sentence</span>
+use:
 
-This saves output tokens and produces cleaner HTML.
+<mark>This sentence</mark>
 
-EDITOR INTENT EXAMPLES
+HTML EFFICIENCY:
 
-Requests like:
-- "make this red"
-- "turn this cyan"
-- "give this a yellow highlight"
-- "underline this"
-- "put this in the middle"
-- "center this heading"
-- "make this bigger"
-- "make this smaller"
-- "raise this number"
-- "put this number below the line"
-- "make this look like a keyboard key"
-- "make this stand out"
-- "change the text color"
-- "style this paragraph"
+Never wrap every individual word in a separate span unless the user explicitly requests per-word styling.
 
-should be understood as editor formatting requests when the context indicates formatting.
+Prefer one span around a continuous phrase or sentence.
 
-Requests like:
-- "what does highlight mean?"
-- "what is cyan?"
-- "explain colors"
-- "what is Markdown?"
+Do not produce huge amounts of unnecessary HTML.
 
-are knowledge questions, not formatting commands.
+This is important because excessive HTML wastes output tokens and can cause incomplete responses.
 
-EDITING RULES
+WRITING REQUESTS:
 
-1. Preserve the selected text whenever possible.
-2. Modify only what the user requested.
-3. Preserve Markdown headings, tables, links, lists, code fences, and existing HTML unless they need modification.
-4. Never unnecessarily regenerate an entire large document.
-5. For a selected-text operation, return the modified selected text or the smallest useful replacement.
-6. For a document-wide operation explicitly requested by the user, process the document as needed.
-7. Do not add commentary around an editor-ready replacement unless the user asks for an explanation.
-8. Do not use unnecessary code fences around ordinary Markdown output.
-9. Do not claim a feature exists if it does not.
-10. If the requested operation is impossible in the active mode, follow the mode rules above.
+When the user explicitly requests a new document, actually create the requested document.
 
-OUTPUT SAFETY
+Match:
 
-Always finish HTML tags correctly.
+- requested subject
+- tone
+- length
+- audience
+- format
+- structure
 
-Never intentionally stop in the middle of:
-- an HTML tag
-- an HTML attribute
-- a Markdown link
-- a Markdown image
-- a fenced code block
+If the user gives a target word count, follow it as closely as practical.
 
-If a task would require an excessively large response, prioritize the user's selected text or the smallest relevant portion instead of generating a massive document.
+For large writing requests:
+
+- produce the complete requested document
+- do not replace the document with an outline
+- do not intentionally stop early
+- do not summarize instead of writing
+- do not explain how the user could write it
+- output the actual requested content
+
+If the user asks for:
+
+"Create a 2,000 word diary"
+
+actually create the diary.
+
+If the user asks for:
+
+"Write a complete article"
+
+write the complete article.
+
+If the user asks for:
+
+"Generate a detailed report"
+
+generate the report.
+
+DOCUMENT EDITING:
+
+When editing existing content:
+
+1. Preserve the original meaning.
+2. Preserve existing facts.
+3. Preserve the user's voice unless a style change is requested.
+4. Preserve unrelated formatting.
+5. Modify only what was requested.
+6. Do not silently delete information.
+7. Do not add unrelated information.
+8. Keep Markdown valid.
+9. Keep HTML balanced and valid.
+10. If selected text exists, prioritize that selection.
+
+GRAMMAR:
+
+If the user asks to fix grammar:
+
+- correct grammar
+- correct spelling where appropriate
+- preserve meaning
+- avoid unnecessarily rewriting the entire passage
+
+REWRITING:
+
+If the user asks for a rewrite:
+
+- preserve the original meaning
+- follow the requested style
+- do not add unrelated information
+
+SHORTENING:
+
+If the user asks to shorten something:
+
+- remove redundancy
+- preserve important information
+- preserve the core meaning
+
+EXPANDING:
+
+If the user asks to expand something:
+
+- add relevant information
+- maintain the existing subject and tone
+- do not pad the document with meaningless sentences
+
+SUMMARIZATION:
+
+If the user asks for a summary:
+
+- summarize the relevant content
+- do not rewrite the entire document
+- preserve important points
+
+DOCUMENT QUESTIONS:
+
+If the user asks a question about the document, answer the question.
+
+Do not modify the document unless the user asks for modification.
+
+GENERAL QUESTIONS:
+
+You may answer general questions normally.
+
+Do not treat every question as an editing command.
+
+NO HALLUCINATED FEATURES:
+
+Never invent:
+
+- browser shortcuts
+- editor buttons
+- application features
+- Markdown features
+- HTML capabilities
+- APIs
+- commands
+- integrations
+- undocumented behavior
+
+If something is uncertain, say so.
+
+RESPONSE SIZE:
+
+Be proportional to the request.
+
+Small request:
+
+"Make this blue."
+
+Return a small result.
+
+Grammar request:
+
+"Fix this sentence."
+
+Return the corrected sentence.
+
+Large request:
+
+"Write a 2,000 word diary."
+
+Return the requested large document.
+
+Do not turn small requests into essays.
+
+Do not unnecessarily repeat the entire document.
+
+OUTPUT:
+
+Return the actual answer or document.
+
+Do not prepend unnecessary meta-commentary.
+
+Use clean Markdown.
+
+If a response reaches the model's output limit, preserve as much useful content as possible.
+
+Never intentionally return an empty response.
 `;
 
-function clampText(value, maxChars) {
-  const text = String(value || "");
-
-  if (text.length <= maxChars) {
-    return text;
-  }
-
-  return `${text.slice(0, maxChars)}\n\n[Context truncated for efficiency.]`;
+function clampText(value, max) {
+  return String(value ?? "").slice(0, max);
 }
 
-function cleanModelOutput(text) {
-  if (!text) {
+function cleanModelOutput(value) {
+  if (typeof value !== "string") {
     return "";
   }
 
-  return text
-    .trim()
-    .replace(/^```(?:markdown|md|html)?\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
+  return value
+    .replace(/\u0000/g, "")
+    .replace(/^\s+/, "")
+    .replace(/\s+$/, "");
 }
 
-function looksLikeHtmlOnlyFormattingRequest(prompt, selection = "") {
-  const p = String(prompt || "")
-    .toLowerCase()
-    .trim();
+function normalizeMode(value) {
+  return value === "html" ? "html" : "markdown";
+}
 
-  if (!p) {
-    return false;
-  }
+function normalizeModel(value) {
+  return ALLOWED_MODELS.has(value)
+    ? value
+    : DEFAULT_MODEL;
+}
 
+function normalizeReasoning(value) {
+  return ALLOWED_REASONING.has(value)
+    ? value
+    : "medium";
+}
+
+function looksLikeHtmlOnlyFormattingRequest(text) {
+  const s = String(text || "").toLowerCase();
+
+  const formattingVerb =
+    /\b(make|turn|change|set|color|colour|format|style|highlight|underline|center|centre|align|enlarge|resize)\b/.test(s);
+
+  const formattingTarget =
+    /\b(red|blue|green|yellow|orange|purple|pink|cyan|teal|white|black)\b/.test(s) ||
+    /\bhighlight(ed|ing)?\b/.test(s) ||
+    /\bunderline(d|ing)?\b/.test(s) ||
+    /\btext\s*(color|colour)\b/.test(s) ||
+    /\bfont\s*(size|color|colour)\b/.test(s) ||
+    /\btext\s*(larger|smaller)\b/.test(s) ||
+    /\b(center|centre)\b/.test(s) ||
+    /\balign\b/.test(s) ||
+    /\bcustom\s*(style|color|colour)\b/.test(s);
+
+  return formattingVerb && formattingTarget;
+}
+
+function looksLikeLargeWritingRequest(text) {
+  const s = String(text || "").toLowerCase();
+
+  const explicitLargeLength =
+    /\b(?:1[5-9]\d{2}|2\d{3}|3\d{3,})\s*(?:words?|word)\b/.test(s);
+
+  const largeDocumentType =
+    /\b(write|create|generate|make|draft|compose)\b/.test(s) &&
+    /\b(diary|essay|article|story|chapter|report|document|guide|journal|biography|review|script)\b/.test(s);
+
+  const explicitLongRequest =
+    /\b(detailed|complete|full-length|long|longer|comprehensive|in-depth)\b/.test(s) &&
+    /\b(write|create|generate|make|draft|compose)\b/.test(s);
+
+  return (
+    explicitLargeLength ||
+    largeDocumentType ||
+    explicitLongRequest
+  );
+}
+
+function looksLikeWritingRequest(text) {
+  const s = String(text || "").toLowerCase();
+
+  return (
+    /\b(write|create|generate|make|draft|compose|continue|expand|extend|develop)\b/.test(s) ||
+    /\b(diary|essay|article|story|chapter|report|journal|biography)\b/.test(s)
+  );
+}
+
+function looksLikeSimpleEdit(text) {
+  const s = String(text || "").toLowerCase();
+
+  return /\b(fix|correct|edit|rewrite|rephrase|shorten|simplify|improve|polish|clean up|format)\b/.test(s);
+}
+
+function detectRequestType(prompt, mode) {
   if (
-    /^(what|why|how|explain|define|meaning|tell me about)\b/.test(p)
+    mode === "markdown" &&
+    looksLikeHtmlOnlyFormattingRequest(prompt)
   ) {
-    return false;
+    return "html_only_formatting";
   }
 
-  const formattingIntent =
-    /\b(make|change|turn|set|use|give|apply|add|put|format|style|color|colour|highlight|underline|center|centre|align|resize|enlarge|shrink|bigger|smaller|larger|font|background|bg|text size|text color|text colour|custom color|custom colour|superscript|subscript|keyboard key|keycap|visual|visually|stand out|emphasize|emphasise|should be|in red|in blue|in yellow|in green|in orange|in purple|in pink|in cyan|in teal)\b/
-      .test(p);
-
-  const htmlOnly =
-    /\b(red|blue|green|yellow|orange|purple|pink|cyan|teal|magenta|white|black|gray|grey|gold|silver)\b/.test(p) ||
-    /\b(colou?r|background|highlight|underline|text[- ]?color|text[- ]?size|font[- ]?(size|family)|center|centre|align|bigger|smaller|larger|resize|superscript|subscript|keyboard key|keycap|line[- ]?height|letter[- ]?spacing|text[- ]?shadow|custom style|styled)\b/.test(p);
-
-  if (!htmlOnly) {
-    return false;
-  }
-
-  return (
-    formattingIntent ||
-    Boolean(selection) ||
-    /\b(this|that|these|those|selected|word|text|sentence|paragraph|heading|title|phrase)\b/.test(
-      p
-    )
-  );
-}
-
-function looksLikeHtmlFormattingRequest(prompt, selection = "") {
-  const p = String(prompt || "").toLowerCase();
-
-  const visualWords =
-    /\b(color|colour|red|blue|green|yellow|orange|purple|pink|cyan|teal|highlight|underline|background|font|size|bigger|smaller|larger|center|centre|align|superscript|subscript|keyboard|keycap|styled|style|visual|visually)\b/;
-
-  const targetWords =
-    /\b(this|that|these|those|text|word|sentence|paragraph|heading|title|selected|selection|line|section)\b/;
-
-  return (
-    visualWords.test(p) &&
-    (targetWords.test(p) || Boolean(selection))
-  );
-}
-
-function looksLikeWritingRequest(prompt) {
-  const p = String(prompt || "").toLowerCase();
-
-  return /\b(write|create|generate|draft|compose|continue|expand|develop|add a section|write a section|make an article|create an article)\b/.test(
-    p
-  );
-}
-
-function looksLikeSimpleEdit(prompt) {
-  const p = String(prompt || "").toLowerCase();
-
-  return /\b(improve|rewrite|rephrase|shorten|simplify|fix|correct|grammar|proofread|polish|summarize|summary|translate)\b/.test(
-    p
-  );
-}
-
-function detectRequestType(prompt, selection = "") {
-  if (looksLikeHtmlFormattingRequest(prompt, selection)) {
-    return "html-formatting";
-  }
-
-  if (looksLikeSimpleEdit(prompt)) {
-    return "editing";
+  if (looksLikeLargeWritingRequest(prompt)) {
+    return "large_writing";
   }
 
   if (looksLikeWritingRequest(prompt)) {
     return "writing";
   }
 
+  if (looksLikeSimpleEdit(prompt)) {
+    return "edit";
+  }
+
+  if (looksLikeHtmlOnlyFormattingRequest(prompt)) {
+    return "html_formatting";
+  }
+
   return "general";
 }
 
-function isLikelyTruncated(content) {
-  const text = String(content || "").trim();
+function outputBudgetFor(requestType) {
+  switch (requestType) {
+    case "large_writing":
+      return OUTPUT_TOKENS.large;
 
-  if (!text) {
-    return false;
+    case "html_formatting":
+      return OUTPUT_TOKENS.html;
+
+    case "writing":
+      return OUTPUT_TOKENS.normal;
+
+    case "edit":
+      return OUTPUT_TOKENS.normal;
+
+    default:
+      return OUTPUT_TOKENS.tiny;
   }
-
-  if (/<span\b[^>]*$/.test(text)) {
-    return true;
-  }
-
-  if (/<(?:u|sup|sub|kbd)\b[^>]*>[^<]*$/.test(text)) {
-    return true;
-  }
-
-  if (/<span\b[^>]*>[\s\S]*$/.test(text)) {
-    const opens = (text.match(/<span\b/gi) || []).length;
-    const closes = (text.match(/<\/span>/gi) || []).length;
-
-    if (opens > closes) {
-      return true;
-    }
-  }
-
-  if (/```[^]*$/.test(text)) {
-    const fences = (text.match(/```/g) || []).length;
-
-    if (fences % 2 !== 0) {
-      return true;
-    }
-  }
-
-  return false;
 }
+
+app.use(express.json({
+  limit: "1mb"
+}));
+
+app.use(express.static("public"));
 
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
-    configured: Boolean(process.env.GROQ_API_KEY),
-    model: DEFAULT_MODEL
+    service: "Peppermint Markdown Studio",
+    groqConfigured: Boolean(process.env.GROQ_API_KEY)
   });
 });
 
@@ -366,274 +469,292 @@ app.post("/api/ai", async (req, res) => {
   try {
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({
-        error: "GROQ_API_KEY is not configured. Add it to your environment variables."
+        error: "GROQ_API_KEY is not configured."
       });
     }
 
     const {
-      action = "ask",
+      action = "assistant",
       prompt = "",
       document = "",
       selection = "",
       conversation = [],
-      model = DEFAULT_MODEL,
-      reasoning = "medium",
-      workspaceMode = "markdown"
+      model,
+      reasoning,
+      workspaceMode
     } = req.body || {};
 
-    if (!String(prompt).trim()) {
+    const userPrompt = clampText(
+      prompt,
+      6000
+    ).trim();
+
+    if (!userPrompt) {
       return res.status(400).json({
-        error: "AI prompt is empty."
+        error: "Please enter a request."
       });
     }
 
-    const selectedModel = ALLOWED_MODELS.has(model)
-      ? model
-      : DEFAULT_MODEL;
+    const mode = normalizeMode(workspaceMode);
+    const selectedModel = normalizeModel(model);
+    const selectedReasoning = normalizeReasoning(reasoning);
 
-    const selectedReasoning = ALLOWED_REASONING.has(reasoning)
-      ? reasoning
-      : "medium";
+    const requestType = detectRequestType(
+      userPrompt,
+      mode
+    );
 
-    const selectedMode =
-      workspaceMode === "html"
-        ? "html"
-        : "markdown";
-
-    if (
-      selectedMode === "markdown" &&
-      looksLikeHtmlOnlyFormattingRequest(prompt, selection)
-    ) {
+    if (requestType === "html_only_formatting") {
       return res.json({
-        ok: true,
         content:
           "Please change to HTML Markdown editor to use this feature.",
         model: selectedModel,
-        mode: selectedMode,
-        usage: null,
-        modeBlocked: true
+        mode,
+        requestType,
+        truncated: false,
+        finishReason: "stop"
       });
     }
 
-    const requestType = detectRequestType(
-      prompt,
-      selection
-    );
+    const maxCompletionTokens =
+      outputBudgetFor(requestType);
 
-    const htmlRequest =
-      selectedMode === "html" &&
-      requestType === "html-formatting";
-
-    const documentLimit = htmlRequest
-      ? 5000
-      : MAX_DOCUMENT_CHARS;
-
-    const selectionLimit = htmlRequest
-      ? 4500
-      : MAX_SELECTION_CHARS;
-
-    const boundedSelection = clampText(
-      selection,
-      selectionLimit
-    );
-
-    const boundedDocument = clampText(
+    const safeDocument = clampText(
       document,
-      documentLimit
+      MAX_DOCUMENT_CHARS
     );
+
+    const safeSelection = clampText(
+      selection,
+      MAX_SELECTION_CHARS
+    );
+
+    const safeConversation =
+      Array.isArray(conversation)
+        ? conversation
+            .filter(
+              item =>
+                item &&
+                typeof item === "object"
+            )
+            .slice(-MAX_CONVERSATION_MESSAGES)
+            .map(item => ({
+              role:
+                item.role === "assistant"
+                  ? "assistant"
+                  : "user",
+              content: clampText(
+                item.content,
+                MAX_CONVERSATION_CHARS
+              )
+            }))
+        : [];
+
+    let taskInstruction;
+
+    if (requestType === "large_writing") {
+      taskInstruction = `
+Create the complete requested document.
+
+Follow any requested word count as closely as practical.
+
+Do not replace the document with an outline.
+
+Do not summarize instead of writing.
+
+Do not intentionally stop early.
+
+Output the finished Markdown document.
+`;
+    } else if (requestType === "edit") {
+      taskInstruction = `
+Modify only what the user requested.
+
+Preserve unrelated content and structure.
+
+If selected text is supplied, prioritize that selection.
+`;
+    } else if (requestType === "html_formatting") {
+      taskInstruction = `
+Apply only the requested visual formatting.
+
+Keep the HTML concise, valid, and efficient.
+
+Do not rewrite unrelated prose.
+`;
+    } else {
+      taskInstruction = `
+Follow the user's request precisely.
+`;
+    }
+
+    const contextMessage = `
+EDITOR MODE:
+${mode === "html"
+  ? "HTML Markdown"
+  : "Simple Markdown"}
+
+ACTION:
+${clampText(action, 100)}
+
+REQUEST TYPE:
+${requestType}
+
+USER REQUEST:
+${userPrompt}
+
+SELECTED TEXT:
+${safeSelection || "(none)"}
+
+CURRENT DOCUMENT:
+${safeDocument || "(empty)"}
+
+TASK:
+${taskInstruction}
+`;
 
     const messages = [
       {
         role: "system",
         content: SYSTEM_PROMPT
+      },
+      ...safeConversation,
+      {
+        role: "user",
+        content: contextMessage
       }
     ];
 
-    if (Array.isArray(conversation)) {
-      for (
-        const item of conversation.slice(
-          -MAX_CONVERSATION_MESSAGES
-        )
-      ) {
-        if (
-          item &&
-          (item.role === "user" ||
-            item.role === "assistant") &&
-          typeof item.content === "string"
-        ) {
-          messages.push({
-            role: item.role,
-            content: clampText(
-              item.content,
-              MAX_CONVERSATION_CHARS
-            )
-          });
-        }
-      }
-    }
-
-    const context = [
-      `ACTION: ${action}`,
-      `REQUEST TYPE: ${requestType}`,
-      `EDITOR MODE: ${
-        selectedMode === "html"
-          ? "HTML Markdown"
-          : "Simple Markdown"
-      }`,
-      "",
-      "SELECTED TEXT:",
-      boundedSelection || "(nothing selected)",
-      "",
-      "CURRENT DOCUMENT:",
-      boundedDocument || "(empty document)"
-    ].join("\n");
-
-    let taskInstruction = "";
-
-    if (requestType === "html-formatting") {
-      taskInstruction = `
-This is an HTML formatting operation.
-
-Return only the smallest useful Markdown/HTML replacement needed for the requested formatting.
-
-Do not write an essay.
-Do not explain HTML.
-Do not generate unrelated content.
-Do not wrap every word individually unless explicitly requested.
-Use one clean HTML element for a continuous piece of text whenever possible.
-`;
-    } else if (requestType === "editing") {
-      taskInstruction = `
-This is an editing operation.
-
-Focus on the selected text first.
-Return the improved/revised content directly.
-Do not add an unrelated explanation unless the user asks for one.
-`;
-    } else if (requestType === "writing") {
-      taskInstruction = `
-This is a content-writing operation.
-
-Generate the requested content in the active Markdown mode.
-Keep the structure useful for direct insertion into the document.
-Do not add unrelated facts or filler.
-`;
-    } else {
-      taskInstruction = `
-Treat this as a document-aware request.
-Use the current document and selection as context, but do not unnecessarily reproduce the entire document.
-`;
-    }
-
-    messages.push({
-      role: "user",
-      content: `${context}
-
-USER REQUEST:
-${prompt}
-
-${taskInstruction}
-
-Return a clean, directly usable response.`
-    });
-
-    const maxCompletionTokens = htmlRequest
-      ? HTML_COMPLETION_TOKENS
-      : NORMAL_COMPLETION_TOKENS;
-
     const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
+      GROQ_API_URL,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json"
+          Authorization:
+            `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type":
+            "application/json"
         },
         body: JSON.stringify({
           model: selectedModel,
           messages,
-          reasoning_effort: selectedReasoning,
-          temperature:
-            requestType === "html-formatting"
-              ? 0.15
-              : 0.25,
+          reasoning_effort:
+            selectedReasoning,
+
+          /*
+            Large writing gets more output room.
+            Small requests remain cheap.
+          */
           max_completion_tokens:
-            maxCompletionTokens
+            maxCompletionTokens,
+
+          temperature:
+            requestType === "large_writing"
+              ? 0.65
+              : 0.45
         })
       }
     );
 
-    const data = await response.json();
+    const raw = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = null;
+    }
 
     if (!response.ok) {
-      const message =
+      const providerMessage =
         data?.error?.message ||
         `Groq request failed with HTTP ${response.status}.`;
 
       if (response.status === 429) {
-        const retryAfterHeader =
-          response.headers.get("retry-after");
-
-        const retryAfter =
-          retryAfterHeader
-            ? Number(retryAfterHeader)
-            : null;
-
         return res.status(429).json({
-          error: retryAfter
-            ? `AI rate limit reached. Please wait about ${retryAfter} seconds and try again.`
-            : "AI rate limit reached. Please wait a moment and try again.",
-          retryAfter
+          error:
+            "The AI provider rate limit was reached. Please wait a moment and try again.",
+          providerError:
+            providerMessage,
+          requestType,
+          retryable: true
         });
       }
 
-      return res.status(response.status).json({
-        error: message
+      return res.status(
+        response.status
+      ).json({
+        error: providerMessage,
+        requestType,
+        retryable:
+          response.status >= 500
       });
     }
 
-    const rawContent =
-      data?.choices?.[0]?.message?.content || "";
+    const choice =
+      data?.choices?.[0];
 
     const content =
-      cleanModelOutput(rawContent);
+      cleanModelOutput(
+        choice?.message?.content
+      );
 
     const finishReason =
-      data?.choices?.[0]?.finish_reason || null;
+      choice?.finish_reason ||
+      "unknown";
 
-    const truncated =
-      finishReason === "length" ||
-      isLikelyTruncated(content);
-
-    if (truncated) {
-      console.warn(
-        "AI response appears truncated.",
-        {
-          finishReason,
-          requestType,
-          model: selectedModel
-        }
-      );
+    /*
+      Never silently turn an empty provider response
+      into an empty AI box.
+    */
+    if (!content) {
+      return res.status(502).json({
+        error:
+          finishReason === "length"
+            ? "The AI reached its output limit before producing usable text. Try a slightly shorter request."
+            : "The AI returned an empty response. Please try again.",
+        requestType,
+        finishReason,
+        retryable: true
+      });
     }
 
     return res.json({
-      ok: true,
       content,
       model: selectedModel,
-      mode: selectedMode,
+      mode,
       requestType,
-      truncated,
+
+      /*
+        The frontend can use this to show
+        that the answer reached the model limit.
+      */
+      truncated:
+        finishReason === "length",
+
       finishReason,
-      usage: data?.usage || null
+
+      usage:
+        data?.usage || null
     });
 
   } catch (error) {
-    console.error("AI request error:", error);
+    console.error(
+      "AI request error:",
+      error
+    );
 
     return res.status(500).json({
       error:
-        "The AI request could not be completed.",
-      detail: error.message
+        "The AI request failed. Please try again.",
+
+      detail:
+        process.env.NODE_ENV === "production"
+          ? undefined
+          : error.message,
+
+      retryable: true
     });
   }
 });
@@ -641,15 +762,18 @@ Return a clean, directly usable response.`
 app.get("*", (req, res) => {
   res.sendFile(
     path.join(
-      __dirname,
+      process.cwd(),
       "public",
       "index.html"
     )
   );
 });
 
-app.listen(PORT, () => {
-  console.log(
-    `Peppermint Markdown Studio running on port ${PORT}`
-  );
-});
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      `Peppermint Markdown Studio running on port ${PORT}`
+    );
+  }
+);
