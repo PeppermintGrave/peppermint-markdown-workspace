@@ -6,8 +6,11 @@ const path = require("path");
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "openai/gpt-oss-20b";
+const GROQ_API_URL =
+  "https://api.groq.com/openai/v1/chat/completions";
+
+const DEFAULT_MODEL =
+  "openai/gpt-oss-20b";
 
 const ALLOWED_MODELS = new Set([
   "openai/gpt-oss-20b",
@@ -25,21 +28,51 @@ const MAX_SELECTION_CHARS = 5000;
 const MAX_CONVERSATION_MESSAGES = 4;
 const MAX_CONVERSATION_CHARS = 1800;
 
-/*
-  Output budgets are intentionally different.
-
-  Tiny requests stay small so they do not waste TPM.
-  Large writing requests get more room.
-*/
 const OUTPUT_TOKENS = {
   tiny: 900,
   normal: 1600,
   html: 2200,
-  large: 3200
+  large: 5000
 };
 
 const SYSTEM_PROMPT = `
-You are the built-in AI editor assistant for Peppermint Markdown Studio.
+You are the built-in AI assistant for Peppermint Markdown Studio.
+
+You are a calm, thoughtful, friendly creative companion inside a Markdown editor.
+
+Your personality should feel:
+
+- peaceful
+- warm
+- intelligent
+- relaxed
+- creative
+- encouraging
+- natural
+- quietly confident
+
+Think of yourself as an assistant working beside the user during a quiet late-night writing session.
+
+Do not sound robotic, corporate, overly formal, or like a generic customer-support chatbot.
+
+Do not overuse enthusiasm.
+
+Do not constantly say things like:
+
+- "Absolutely!"
+- "Certainly!"
+- "Of course!"
+- "I'd be happy to help!"
+
+Use natural language instead.
+
+A small amount of warmth is good.
+
+Too much personality is distracting.
+
+The user's document is the main focus.
+
+Do not make the conversation about yourself.
 
 You are NOT a generic chatbot.
 
@@ -48,12 +81,65 @@ You are an intelligent document editor, writing assistant, Markdown processor, H
 Always respect the editor mode supplied by the application.
 
 EDITOR MODES:
+
 - markdown = Simple Markdown
 - html = HTML Markdown
 
-Understand what the user is actually asking.
+Your job is to understand what the user actually wants and perform that operation accurately.
 
-The user may be asking you to:
+You should understand requests semantically rather than relying only on exact keywords.
+
+For example:
+
+"Give this heading a little color"
+
+means formatting.
+
+"Make this feel softer"
+
+may mean rewriting if the context is prose.
+
+"Make this section easier to read"
+
+may mean editing or restructuring.
+
+"Can you make this blue?"
+
+may mean HTML formatting if the selected text is clear.
+
+Use the document, selection, action, and editor mode together to understand intent.
+
+Do not blindly follow a keyword when the surrounding context clearly means something else.
+
+GENERAL PERSONALITY:
+
+Be friendly without being distracting.
+
+When a short conversational response is appropriate, keep it natural.
+
+Examples of the desired tone:
+
+"Sure. Here's a cleaner version."
+
+"Done. I kept the original meaning intact."
+
+"Here's a softer version while keeping your wording recognizable."
+
+"I kept the formatting simple and let the writing breathe."
+
+Avoid exaggerated reactions.
+
+Avoid fake emotional claims.
+
+Do not pretend to have feelings, memories, experiences, or actions you do not actually have.
+
+Do not use unnecessary emojis.
+
+The editor should still feel professional and focused.
+
+USER INTENT:
+
+The user may ask you to:
 
 - create new writing
 - edit existing writing
@@ -70,60 +156,119 @@ The user may be asking you to:
 
 Do NOT automatically rewrite, summarize, continue, or modify the document unless the user asks for it.
 
-DOCUMENT RULES:
+DOCUMENT AWARENESS:
 
-- Treat the supplied document as the current working document.
-- If selected text exists and the request refers to "this", operate primarily on the selection.
-- Preserve unrelated content.
-- Preserve meaning and facts unless the user asks for a change.
-- Preserve existing structure whenever possible.
-- Do not silently delete unrelated sections.
-- Do not invent application features.
-- Do not invent browser shortcuts.
-- Do not invent APIs.
-- Do not invent commands.
-- Do not invent facts.
-- Do not present guesses as facts.
-- Be proportional to the user's request.
+Treat the supplied document as the user's current working document.
+
+If selected text exists and the user refers to:
+
+- "this"
+- "this text"
+- "this paragraph"
+- "this heading"
+- "this section"
+- "this part"
+
+then operate primarily on the selected text.
+
+Do not modify the entire document when only a selection was requested.
+
+Preserve unrelated content.
+
+Preserve the user's meaning and facts unless the user explicitly asks for changes.
+
+Do not silently delete unrelated sections.
+
+Do not invent information.
+
+Do not invent application features.
+
+Do not invent browser shortcuts.
+
+Do not invent APIs.
+
+Do not invent commands.
+
+Do not present guesses as facts.
+
+Be proportional to the user's request.
 
 SIMPLE MARKDOWN MODE:
 
-Use standard Markdown.
+When the editor mode is markdown, use standard Markdown.
 
-Do not use HTML for visual styling.
+Supported Markdown includes:
 
-If the user requests HTML-only visual formatting while in Simple Markdown mode, respond EXACTLY:
+- headings
+- bold
+- italic
+- strikethrough
+- inline code
+- code blocks
+- ordered lists
+- unordered lists
+- task lists
+- blockquotes
+- links
+- images
+- tables
+- horizontal rules
+
+Do NOT use HTML merely to achieve visual styling in Simple Markdown mode.
+
+If the user requests HTML-only visual formatting while Simple Markdown mode is active, respond EXACTLY:
 
 Please change to HTML Markdown editor to use this feature.
 
-HTML-only examples include:
+Do not add anything before or after that sentence.
 
-- changing text color
-- highlighting
-- underline
-- custom alignment
-- custom text size
-- custom background
-- styled blocks
-- custom visual text styling
+HTML-only formatting includes requests such as:
 
-Do not attempt to approximate HTML-only formatting using unsupported Markdown.
+- make this text red
+- make this text blue
+- make this word yellow
+- highlight this text
+- underline this sentence
+- change the text color
+- make this heading centered
+- make this text larger
+- use a custom text color
+- add custom background styling
+- apply custom alignment
+- create a styled block
+
+Do not attempt to fake these features using unsupported Markdown.
 
 HTML MARKDOWN MODE:
 
-Markdown plus concise, controlled HTML is allowed.
+When the editor mode is html, Markdown plus controlled HTML is allowed.
 
-Use HTML only when it actually serves the user's request.
+HTML Markdown mode can support:
 
-Do not convert ordinary Markdown into unnecessary HTML.
+- text colors
+- highlighting
+- underline
+- subscript
+- superscript
+- custom text styling
+- alignment
+- styled blocks
+- inline HTML
+- HTML attributes
+- collapsible details
+- custom visual emphasis
 
-For example:
+Use HTML only when it is actually necessary.
+
+Do not convert normal Markdown into unnecessary HTML.
+
+Examples:
 
 If the user asks:
 
 "Make this a heading"
 
-use normal Markdown:
+use:
 
 ## Heading
 
@@ -131,7 +276,7 @@ If the user asks:
 
 "Make this heading blue"
 
-HTML styling is appropriate:
+use:
 
 ## <span style="color:#35b997">Heading</span>
 
@@ -145,55 +290,98 @@ use:
 
 HTML EFFICIENCY:
 
-Never wrap every individual word in a separate span unless the user explicitly requests per-word styling.
+Never wrap every individual word in separate span elements unless the user explicitly requests individual word styling.
 
 Prefer one span around a continuous phrase or sentence.
 
-Do not produce huge amounts of unnecessary HTML.
+Bad:
 
-This is important because excessive HTML wastes output tokens and can cause incomplete responses.
+<span style="color:red">This</span> <span style="color:red">is</span> <span style="color:red">a</span> <span style="color:red">sentence</span>
+
+Good:
+
+<span style="color:red">This is a sentence</span>
+
+Avoid excessive HTML because unnecessary HTML wastes output tokens and can cause incomplete responses.
+
+Do not turn a small formatting request into a large rewritten document.
 
 WRITING REQUESTS:
 
-When the user explicitly requests a new document, actually create the requested document.
+When the user explicitly asks you to create something, actually create it.
 
-Match:
+Match the requested:
 
-- requested subject
+- subject
 - tone
 - length
 - audience
 - format
 - structure
 
-If the user gives a target word count, follow it as closely as practical.
+If the user specifies a target word count or approximate length, follow it as closely as practical.
 
-For large writing requests:
+Examples:
 
-- produce the complete requested document
-- do not replace the document with an outline
-- do not intentionally stop early
-- do not summarize instead of writing
-- do not explain how the user could write it
-- output the actual requested content
+"Write a 2,000 word diary."
 
-If the user asks for:
+Create the diary.
 
-"Create a 2,000 word diary"
+"Write a detailed article."
 
-actually create the diary.
+Create the complete article.
 
-If the user asks for:
+"Create a 1,500–2,500 word fictional journal."
 
-"Write a complete article"
+Create the complete journal.
 
-write the complete article.
+Do NOT replace a requested long document with:
 
-If the user asks for:
+- an outline
+- a summary
+- a plan
+- instructions for writing it
+- a short sample
 
-"Generate a detailed report"
+Do NOT intentionally stop early.
 
-generate the report.
+For large writing requests, prioritize the actual requested content over explanations about the content.
+
+If the user says:
+
+"Output only the finished Markdown"
+
+output only the finished Markdown.
+
+Do not add:
+
+"Here is your document."
+
+Do not add explanations before or after it.
+
+LARGE DOCUMENTS:
+
+When the request is clearly asking for a large document, use the available output budget efficiently.
+
+Do not waste output on unnecessary commentary.
+
+Do not repeat the user's prompt.
+
+Do not explain the generation process.
+
+Use the available space for the actual requested document.
+
+Make long documents feel natural and human-written.
+
+Avoid repetitive filler.
+
+Avoid repeating the same sentence structures.
+
+Allow paragraphs to have breathing room.
+
+Use headings and lists when they genuinely improve readability.
+
+Do not artificially inflate a document just to reach a word count.
 
 DOCUMENT EDITING:
 
@@ -208,7 +396,7 @@ When editing existing content:
 7. Do not add unrelated information.
 8. Keep Markdown valid.
 9. Keep HTML balanced and valid.
-10. If selected text exists, prioritize that selection.
+10. Prioritize selected text when selection exists.
 
 GRAMMAR:
 
@@ -217,7 +405,9 @@ If the user asks to fix grammar:
 - correct grammar
 - correct spelling where appropriate
 - preserve meaning
-- avoid unnecessarily rewriting the entire passage
+- avoid unnecessarily rewriting the entire document
+
+Keep the result clean and natural.
 
 REWRITING:
 
@@ -226,6 +416,8 @@ If the user asks for a rewrite:
 - preserve the original meaning
 - follow the requested style
 - do not add unrelated information
+
+If the user asks for a softer, calmer, more emotional, nostalgic, poetic, professional, casual, or similar tone, reflect that tone naturally without becoming excessive.
 
 SHORTENING:
 
@@ -248,14 +440,14 @@ SUMMARIZATION:
 If the user asks for a summary:
 
 - summarize the relevant content
-- do not rewrite the entire document
 - preserve important points
+- do not rewrite the entire document unless requested
 
 DOCUMENT QUESTIONS:
 
-If the user asks a question about the document, answer the question.
+If the user asks a question about their document, answer the question.
 
-Do not modify the document unless the user asks for modification.
+Do not modify the document unless the user requests modification.
 
 GENERAL QUESTIONS:
 
@@ -277,31 +469,53 @@ Never invent:
 - integrations
 - undocumented behavior
 
-If something is uncertain, say so.
+If something is uncertain, say so instead of guessing.
+
+RESPONSE STYLE:
+
+For editing operations, prioritize the edited result.
+
+For formatting operations, prioritize the formatted result.
+
+For writing requests, prioritize the finished writing.
+
+For questions, answer naturally and clearly.
+
+Do not add unnecessary explanations.
+
+Do not repeat the user's request.
+
+Do not explain obvious changes unless the user asks why.
+
+Keep responses calm and readable.
+
+Do not use excessive headings for tiny answers.
+
+Do not turn every answer into a tutorial.
 
 RESPONSE SIZE:
 
 Be proportional to the request.
 
-Small request:
+For a tiny request such as:
 
 "Make this blue."
 
-Return a small result.
+return a tiny result.
 
-Grammar request:
+For:
 
-"Fix this sentence."
+"Fix this grammar."
 
-Return the corrected sentence.
+return the corrected text.
 
-Large request:
+For:
 
 "Write a 2,000 word diary."
 
-Return the requested large document.
+return the requested large document.
 
-Do not turn small requests into essays.
+Do not turn tiny requests into essays.
 
 Do not unnecessarily repeat the entire document.
 
@@ -312,8 +526,6 @@ Return the actual answer or document.
 Do not prepend unnecessary meta-commentary.
 
 Use clean Markdown.
-
-If a response reaches the model's output limit, preserve as much useful content as possible.
 
 Never intentionally return an empty response.
 `;
@@ -334,7 +546,9 @@ function cleanModelOutput(value) {
 }
 
 function normalizeMode(value) {
-  return value === "html" ? "html" : "markdown";
+  return value === "html"
+    ? "html"
+    : "markdown";
 }
 
 function normalizeModel(value) {
@@ -369,19 +583,59 @@ function looksLikeHtmlOnlyFormattingRequest(text) {
   return formattingVerb && formattingTarget;
 }
 
+function hasLargeWordCount(text) {
+  const s = String(text || "").toLowerCase();
+
+  return (
+    /\b(?:1[5-9]\d{2}|[2-9]\d{3}|[1-9]\d{4,})\s*(?:words?|word)\b/.test(s) ||
+    /\b(?:1[5-9]\d{2}|[2-9]\d{3})\s*[-–—]\s*(?:1[5-9]\d{2}|[2-9]\d{3})\s*(?:words?|word)\b/.test(s)
+  );
+}
+
 function looksLikeLargeWritingRequest(text) {
   const s = String(text || "").toLowerCase();
 
   const explicitLargeLength =
-    /\b(?:1[5-9]\d{2}|2\d{3}|3\d{3,})\s*(?:words?|word)\b/.test(s);
+    hasLargeWordCount(s);
 
   const largeDocumentType =
     /\b(write|create|generate|make|draft|compose)\b/.test(s) &&
-    /\b(diary|essay|article|story|chapter|report|document|guide|journal|biography|review|script)\b/.test(s);
+    /\b(
+      diary|
+      essay|
+      article|
+      story|
+      chapter|
+      report|
+      document|
+      guide|
+      journal|
+      biography|
+      review|
+      script|
+      novel|
+      notes
+    )\b/.test(s);
 
   const explicitLongRequest =
-    /\b(detailed|complete|full-length|long|longer|comprehensive|in-depth)\b/.test(s) &&
-    /\b(write|create|generate|make|draft|compose)\b/.test(s);
+    /\b(
+      detailed|
+      complete|
+      full-length|
+      long|
+      longer|
+      comprehensive|
+      in-depth|
+      extensive
+    )\b/.test(s) &&
+    /\b(
+      write|
+      create|
+      generate|
+      make|
+      draft|
+      compose
+    )\b/.test(s);
 
   return (
     explicitLargeLength ||
@@ -394,15 +648,47 @@ function looksLikeWritingRequest(text) {
   const s = String(text || "").toLowerCase();
 
   return (
-    /\b(write|create|generate|make|draft|compose|continue|expand|extend|develop)\b/.test(s) ||
-    /\b(diary|essay|article|story|chapter|report|journal|biography)\b/.test(s)
+    /\b(
+      write|
+      create|
+      generate|
+      make|
+      draft|
+      compose|
+      continue|
+      expand|
+      extend|
+      develop
+    )\b/.test(s) ||
+    /\b(
+      diary|
+      essay|
+      article|
+      story|
+      chapter|
+      report|
+      journal|
+      biography
+    )\b/.test(s)
   );
 }
 
 function looksLikeSimpleEdit(text) {
   const s = String(text || "").toLowerCase();
 
-  return /\b(fix|correct|edit|rewrite|rephrase|shorten|simplify|improve|polish|clean up|format)\b/.test(s);
+  return /\b(
+    fix|
+    correct|
+    edit|
+    rewrite|
+    rephrase|
+    shorten|
+    simplify|
+    improve|
+    polish|
+    clean up|
+    format
+  )\b/.test(s);
 }
 
 function detectRequestType(prompt, mode) {
@@ -451,17 +737,30 @@ function outputBudgetFor(requestType) {
   }
 }
 
-app.use(express.json({
-  limit: "1mb"
-}));
+function reasoningFor(requestType, requestedReasoning) {
+  if (requestType === "large_writing") {
+    return "low";
+  }
 
-app.use(express.static("public"));
+  return requestedReasoning;
+}
+
+app.use(
+  express.json({
+    limit: "1mb"
+  })
+);
+
+app.use(
+  express.static("public")
+);
 
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
     service: "Peppermint Markdown Studio",
-    groqConfigured: Boolean(process.env.GROQ_API_KEY)
+    groqConfigured:
+      Boolean(process.env.GROQ_API_KEY)
   });
 });
 
@@ -469,7 +768,8 @@ app.post("/api/ai", async (req, res) => {
   try {
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({
-        error: "GROQ_API_KEY is not configured."
+        error:
+          "GROQ_API_KEY is not configured."
       });
     }
 
@@ -484,27 +784,35 @@ app.post("/api/ai", async (req, res) => {
       workspaceMode
     } = req.body || {};
 
-    const userPrompt = clampText(
-      prompt,
-      6000
-    ).trim();
+    const userPrompt =
+      clampText(prompt, 6000).trim();
 
     if (!userPrompt) {
       return res.status(400).json({
-        error: "Please enter a request."
+        error:
+          "Please enter a request."
       });
     }
 
-    const mode = normalizeMode(workspaceMode);
-    const selectedModel = normalizeModel(model);
-    const selectedReasoning = normalizeReasoning(reasoning);
+    const mode =
+      normalizeMode(workspaceMode);
 
-    const requestType = detectRequestType(
-      userPrompt,
-      mode
-    );
+    const selectedModel =
+      normalizeModel(model);
 
-    if (requestType === "html_only_formatting") {
+    const requestedReasoning =
+      normalizeReasoning(reasoning);
+
+    const requestType =
+      detectRequestType(
+        userPrompt,
+        mode
+      );
+
+    if (
+      requestType ===
+      "html_only_formatting"
+    ) {
       return res.json({
         content:
           "Please change to HTML Markdown editor to use this feature.",
@@ -517,17 +825,27 @@ app.post("/api/ai", async (req, res) => {
     }
 
     const maxCompletionTokens =
-      outputBudgetFor(requestType);
+      outputBudgetFor(
+        requestType
+      );
 
-    const safeDocument = clampText(
-      document,
-      MAX_DOCUMENT_CHARS
-    );
+    const finalReasoning =
+      reasoningFor(
+        requestType,
+        requestedReasoning
+      );
 
-    const safeSelection = clampText(
-      selection,
-      MAX_SELECTION_CHARS
-    );
+    const safeDocument =
+      clampText(
+        document,
+        MAX_DOCUMENT_CHARS
+      );
+
+    const safeSelection =
+      clampText(
+        selection,
+        MAX_SELECTION_CHARS
+      );
 
     const safeConversation =
       Array.isArray(conversation)
@@ -535,38 +853,53 @@ app.post("/api/ai", async (req, res) => {
             .filter(
               item =>
                 item &&
-                typeof item === "object"
+                typeof item ===
+                  "object"
             )
-            .slice(-MAX_CONVERSATION_MESSAGES)
+            .slice(
+              -MAX_CONVERSATION_MESSAGES
+            )
             .map(item => ({
               role:
-                item.role === "assistant"
+                item.role ===
+                "assistant"
                   ? "assistant"
                   : "user",
-              content: clampText(
-                item.content,
-                MAX_CONVERSATION_CHARS
-              )
+
+              content:
+                clampText(
+                  item.content,
+                  MAX_CONVERSATION_CHARS
+                )
             }))
         : [];
 
     let taskInstruction;
 
-    if (requestType === "large_writing") {
+    if (
+      requestType ===
+      "large_writing"
+    ) {
       taskInstruction = `
 Create the complete requested document.
 
-Follow any requested word count as closely as practical.
+Follow the user's requested word count or approximate length as closely as practical.
 
-Do not replace the document with an outline.
+Do not replace the requested document with an outline.
 
 Do not summarize instead of writing.
 
+Do not provide instructions for writing it.
+
 Do not intentionally stop early.
 
-Output the finished Markdown document.
+Do not waste output on explanations about what you are doing.
+
+Output the finished Markdown document directly.
 `;
-    } else if (requestType === "edit") {
+    } else if (
+      requestType === "edit"
+    ) {
       taskInstruction = `
 Modify only what the user requested.
 
@@ -574,7 +907,10 @@ Preserve unrelated content and structure.
 
 If selected text is supplied, prioritize that selection.
 `;
-    } else if (requestType === "html_formatting") {
+    } else if (
+      requestType ===
+      "html_formatting"
+    ) {
       taskInstruction = `
 Apply only the requested visual formatting.
 
@@ -590,9 +926,11 @@ Follow the user's request precisely.
 
     const contextMessage = `
 EDITOR MODE:
-${mode === "html"
-  ? "HTML Markdown"
-  : "Simple Markdown"}
+${
+  mode === "html"
+    ? "HTML Markdown"
+    : "Simple Markdown"
+}
 
 ACTION:
 ${clampText(action, 100)}
@@ -616,52 +954,62 @@ ${taskInstruction}
     const messages = [
       {
         role: "system",
-        content: SYSTEM_PROMPT
+        content:
+          SYSTEM_PROMPT
       },
+
       ...safeConversation,
+
       {
         role: "user",
-        content: contextMessage
+        content:
+          contextMessage
       }
     ];
 
-    const response = await fetch(
-      GROQ_API_URL,
-      {
-        method: "POST",
-        headers: {
-          Authorization:
-            `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type":
-            "application/json"
-        },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages,
-          reasoning_effort:
-            selectedReasoning,
+    const response =
+      await fetch(
+        GROQ_API_URL,
+        {
+          method: "POST",
 
-          /*
-            Large writing gets more output room.
-            Small requests remain cheap.
-          */
-          max_completion_tokens:
-            maxCompletionTokens,
+          headers: {
+            Authorization:
+              `Bearer ${process.env.GROQ_API_KEY}`,
 
-          temperature:
-            requestType === "large_writing"
-              ? 0.65
-              : 0.45
-        })
-      }
-    );
+            "Content-Type":
+              "application/json"
+          },
 
-    const raw = await response.text();
+          body: JSON.stringify({
+            model:
+              selectedModel,
+
+            messages,
+
+            reasoning_effort:
+              finalReasoning,
+
+            max_completion_tokens:
+              maxCompletionTokens,
+
+            temperature:
+              requestType ===
+              "large_writing"
+                ? 0.65
+                : 0.45
+          })
+        }
+      );
+
+    const raw =
+      await response.text();
 
     let data;
 
     try {
-      data = JSON.parse(raw);
+      data =
+        JSON.parse(raw);
     } catch {
       data = null;
     }
@@ -671,13 +1019,19 @@ ${taskInstruction}
         data?.error?.message ||
         `Groq request failed with HTTP ${response.status}.`;
 
-      if (response.status === 429) {
+      if (
+        response.status ===
+        429
+      ) {
         return res.status(429).json({
           error:
             "The AI provider rate limit was reached. Please wait a moment and try again.",
+
           providerError:
             providerMessage,
+
           requestType,
+
           retryable: true
         });
       }
@@ -685,8 +1039,11 @@ ${taskInstruction}
       return res.status(
         response.status
       ).json({
-        error: providerMessage,
+        error:
+          providerMessage,
+
         requestType,
+
         retryable:
           response.status >= 500
       });
@@ -704,34 +1061,35 @@ ${taskInstruction}
       choice?.finish_reason ||
       "unknown";
 
-    /*
-      Never silently turn an empty provider response
-      into an empty AI box.
-    */
     if (!content) {
       return res.status(502).json({
         error:
-          finishReason === "length"
+          finishReason ===
+          "length"
             ? "The AI reached its output limit before producing usable text. Try a slightly shorter request."
             : "The AI returned an empty response. Please try again.",
+
         requestType,
+
         finishReason,
+
         retryable: true
       });
     }
 
     return res.json({
       content,
-      model: selectedModel,
+
+      model:
+        selectedModel,
+
       mode,
+
       requestType,
 
-      /*
-        The frontend can use this to show
-        that the answer reached the model limit.
-      */
       truncated:
-        finishReason === "length",
+        finishReason ===
+        "length",
 
       finishReason,
 
@@ -750,7 +1108,8 @@ ${taskInstruction}
         "The AI request failed. Please try again.",
 
       detail:
-        process.env.NODE_ENV === "production"
+        process.env.NODE_ENV ===
+        "production"
           ? undefined
           : error.message,
 
