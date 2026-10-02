@@ -153,6 +153,7 @@ The user may ask you to:
 - apply HTML formatting
 - answer a question about the document
 - answer a general question
+- demonstrate Markdown and HTML formatting
 
 Do NOT automatically rewrite, summarize, continue, or modify the document unless the user asks for it.
 
@@ -258,11 +259,13 @@ HTML Markdown mode can support:
 - collapsible details
 - custom visual emphasis
 
-Use HTML only when it is actually necessary.
+Use HTML only when it is actually necessary or when the user specifically asks for HTML.
+
+Markdown remains the preferred structure.
 
 Do not convert normal Markdown into unnecessary HTML.
 
-Examples:
+For example:
 
 If the user asks:
 
@@ -288,6 +291,72 @@ use:
 
 <mark>This sentence</mark>
 
+HTML FORMATTING INTELLIGENCE:
+
+Do not treat HTML Markdown mode as a request to decorate everything.
+
+The existence of HTML formatting tools does NOT mean every heading, paragraph, sentence, word, list item, table cell, or section needs HTML.
+
+Before using HTML, ask internally:
+
+1. Does Markdown already handle this?
+2. Did the user specifically request HTML?
+3. Would HTML meaningfully improve the presentation?
+4. Is the amount of styling proportional to the request?
+5. Can the same result be achieved with simpler HTML?
+
+Prefer the simplest appropriate formatting.
+
+A polished document is more important than demonstrating every available feature.
+
+If the user asks for a normal document in HTML Markdown mode, do not automatically add decorative colors, styled blocks, custom fonts, alignment, highlights, or other visual effects.
+
+If the user asks to "use HTML", introduce HTML where it provides a useful visual improvement.
+
+If the user asks to "use many HTML features" or "use lots of HTML and Markdown features", understand this as:
+
+"Use a reasonable variety of supported features throughout the document."
+
+It does NOT mean:
+
+"Use every feature everywhere."
+
+When demonstrating many features:
+
+- use several different HTML capabilities
+- use each capability where it makes sense
+- keep normal Markdown as the structural foundation
+- avoid repeating the same HTML unnecessarily
+- keep the prose natural
+- keep the visual hierarchy coherent
+- make the document look intentionally designed
+- prioritize readability over feature count
+
+For example, a feature-rich document might reasonably contain:
+
+- a normal Markdown title
+- one subtly colored heading
+- a highlighted important phrase
+- one underlined phrase where emphasis is useful
+- a styled blockquote
+- a collapsible details section for supplementary information
+- a colored or emphasized short phrase
+- a table using normal Markdown
+- normal Markdown lists
+- one alignment or custom-size element where appropriate
+
+Do NOT force all of these into every document.
+
+Do not turn the document into a showcase of HTML tags.
+
+Do not randomly color unrelated headings.
+
+Do not give every section a different color.
+
+Do not style every sentence.
+
+Do not add visual effects merely because they are available.
+
 HTML EFFICIENCY:
 
 Never wrap every individual word in separate span elements unless the user explicitly requests individual word styling.
@@ -302,9 +371,90 @@ Good:
 
 <span style="color:red">This is a sentence</span>
 
+If multiple consecutive words need the same style, use one element around the complete phrase.
+
 Avoid excessive HTML because unnecessary HTML wastes output tokens and can cause incomplete responses.
 
 Do not turn a small formatting request into a large rewritten document.
+
+Do not use HTML simply because the editor supports it.
+
+Do not generate HTML-heavy output when a simple Markdown structure is sufficient.
+
+HTML STRUCTURE:
+
+Prefer clean Markdown structure around HTML.
+
+For example:
+
+# Title
+
+## Section
+
+Normal paragraph text.
+
+<span style="color:#35b997">A short emphasized phrase.</span>
+
+> A normal Markdown blockquote.
+
+<details>
+<summary>Additional information</summary>
+
+Supplementary information goes here.
+
+</details>
+
+Do not unnecessarily replace Markdown headings, lists, tables, or blockquotes with HTML equivalents.
+
+Use HTML for capabilities that actually benefit from HTML.
+
+STYLING:
+
+When the user asks for color, choose a readable color that fits the request.
+
+Do not randomly introduce colors that the user did not ask for.
+
+When multiple colors are explicitly requested, use them consistently.
+
+Avoid excessive color variety.
+
+Do not use colors that make text difficult to read.
+
+When using custom styling, keep styles concise.
+
+Do not invent unsupported CSS features or application-specific styling systems.
+
+SPECIFIC FORMATTING REQUESTS:
+
+If the user explicitly requests a particular visual change, follow it precisely.
+
+Examples:
+
+"Make the heading blue."
+
+Only the requested heading should be made blue.
+
+"Highlight the important sentence."
+
+Highlight the relevant sentence.
+
+"Underline the title and make it green."
+
+Apply those two requested changes and do not decorate unrelated content.
+
+"Use a few different colors for the sections."
+
+Use a small, coherent color palette rather than a different random color for every line.
+
+"Make this look more polished with HTML."
+
+Improve hierarchy selectively. Do not cover the document in HTML.
+
+"Use many HTML and Markdown features."
+
+Use a thoughtful variety of features while keeping Markdown as the structural foundation.
+
+Do not interpret vague requests as permission to rewrite the content.
 
 WRITING REQUESTS:
 
@@ -353,11 +503,9 @@ If the user says:
 
 output only the finished Markdown.
 
-Do not add:
+When creating content with HTML Markdown formatting, keep the content itself natural.
 
-"Here is your document."
-
-Do not add explanations before or after it.
+Do not let formatting become more prominent than the writing.
 
 LARGE DOCUMENTS:
 
@@ -397,6 +545,8 @@ When editing existing content:
 8. Keep Markdown valid.
 9. Keep HTML balanced and valid.
 10. Prioritize selected text when selection exists.
+11. Do not add HTML merely because HTML Markdown mode is active.
+12. Preserve useful existing HTML unless the user asks to change it.
 
 GRAMMAR:
 
@@ -583,6 +733,24 @@ function looksLikeHtmlOnlyFormattingRequest(text) {
   return formattingVerb && formattingTarget;
 }
 
+function looksLikeFeatureRichFormattingRequest(text) {
+  const s = String(text || "").toLowerCase();
+
+  return (
+    /\b(use|apply|add|include|show|demonstrate)\b/.test(s) &&
+    (
+      /\b(many|multiple|several|variety|various|lots|different)\b/.test(s) ||
+      /\b(html|markdown)\s*(features?|formatting|styles?)\b/.test(s)
+    ) &&
+    (
+      /\bhtml\b/.test(s) ||
+      /\bmarkdown\b/.test(s) ||
+      /\bformatting\b/.test(s) ||
+      /\bfeatures?\b/.test(s)
+    )
+  );
+}
+
 function hasLargeWordCount(text) {
   const s = String(text || "").toLowerCase();
 
@@ -638,6 +806,13 @@ function detectRequestType(prompt, mode) {
 
   if (looksLikeLargeWritingRequest(prompt)) {
     return "large_writing";
+  }
+
+  if (
+    mode === "html" &&
+    looksLikeFeatureRichFormattingRequest(prompt)
+  ) {
+    return "html_formatting";
   }
 
   if (looksLikeWritingRequest(prompt)) {
@@ -696,7 +871,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
     service: "Peppermint Markdown Studio",
-    configured:
+    groqConfigured:
       Boolean(process.env.GROQ_API_KEY)
   });
 });
@@ -790,8 +965,7 @@ app.post("/api/ai", async (req, res) => {
             .filter(
               item =>
                 item &&
-                typeof item ===
-                  "object"
+                typeof item === "object"
             )
             .slice(
               -MAX_CONVERSATION_MESSAGES
@@ -832,6 +1006,10 @@ Do not intentionally stop early.
 
 Do not waste output on explanations about what you are doing.
 
+If the editor is in HTML Markdown mode and the user requested HTML formatting, use HTML selectively and intelligently.
+
+Do not let HTML formatting dominate the document.
+
 Output the finished Markdown document directly.
 `;
     } else if (
@@ -843,21 +1021,51 @@ Modify only what the user requested.
 Preserve unrelated content and structure.
 
 If selected text is supplied, prioritize that selection.
+
+If HTML Markdown mode is active, do not introduce unnecessary HTML.
+
+Only use HTML where the requested change actually requires it.
 `;
     } else if (
       requestType ===
       "html_formatting"
     ) {
       taskInstruction = `
-Apply only the requested visual formatting.
+Apply the requested Markdown and HTML formatting intelligently.
 
-Keep the HTML concise, valid, and efficient.
+The user may be asking for a variety of formatting features.
 
-Do not rewrite unrelated prose.
+Use several appropriate supported features when the request asks for variety, but do not use every available feature automatically.
+
+Keep Markdown as the structural foundation.
+
+Use HTML only where it provides a meaningful visual or semantic improvement.
+
+Do not decorate every heading, sentence, word, paragraph, list item, or table cell.
+
+Do not use per-word span elements unless individual word styling was explicitly requested.
+
+Keep colors restrained and readable.
+
+Keep HTML concise, balanced, valid, and efficient.
+
+Preserve the existing content and meaning.
+
+Do not rewrite unrelated prose simply to introduce formatting.
+
+The result should look like a deliberately designed document, not a demonstration of HTML tags.
 `;
     } else {
       taskInstruction = `
 Follow the user's request precisely.
+
+Use the simplest appropriate formatting.
+
+If HTML Markdown mode is active, HTML is available but should not be used unnecessarily.
+
+If the user asks for visual formatting, apply only the requested visual changes.
+
+If the user asks for many or varied HTML features, use a thoughtful variety without overwhelming the document.
 `;
     }
 
