@@ -696,7 +696,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
     service: "Peppermint Markdown Studio",
-    groqConfigured:
+    configured:
       Boolean(process.env.GROQ_API_KEY)
   });
 });
